@@ -8,8 +8,8 @@ jobs:
   panel:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -24,10 +24,11 @@ jobs:
   integration:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: pip install pytest ruff
-      - run: ruff check --line-length 120 custom_components python-tests
+      # ruff is pinned so a new release can't fail the build; its settings are in ruff.toml.
+      - run: pip install pytest ruff==0.17.3
+      - run: ruff check custom_components python-tests
       - run: python -m pytest python-tests -q

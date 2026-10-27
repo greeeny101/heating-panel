@@ -11,7 +11,6 @@ from homeassistant.core import HomeAssistant
 
 from .const import LOGGER
 
-
 # After MQTT is up, how long to let a new subscription reach the broker before asking the receiver anything.
 FIRST_READ_DELAY_SECONDS = 5
 

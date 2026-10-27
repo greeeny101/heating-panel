@@ -1,4 +1,5 @@
 import pytest
+from test_mode import FakeClock
 
 from heating_panel.tpi import (
     IDLE_DISABLED,
@@ -16,7 +17,6 @@ from heating_panel.tpi import (
     on_minutes,
     plan_cycle,
 )
-from test_mode import FakeClock
 
 # The mechanics are tested with even margins and a short minimum OFF, which keeps the numbers simple.
 S = Settings(min_off_minutes=3, margin_on=1.5, margin_off=1.5)

@@ -14,9 +14,9 @@ write to pass, then read the setpoint back on its own. See docs/receiver-protoco
 from __future__ import annotations
 
 import asyncio
+from datetime import datetime, timedelta
 import json
 import time
-from datetime import datetime, timedelta
 from typing import Any
 
 from homeassistant.components import mqtt, persistent_notification
@@ -286,7 +286,7 @@ class TpiController:
                 await self._publish("set", {"occupied_heating_setpoint": setpoint})
                 await asyncio.sleep(ECHO_SECONDS)
                 for _ in range(READ_TRIES):
-                    if _number((await self._read_one("occupied_heating_setpoint"))) == setpoint:
+                    if _number(await self._read_one("occupied_heating_setpoint")) == setpoint:
                         ok = True
                         break
                     await asyncio.sleep(ECHO_SECONDS)

@@ -1,7 +1,7 @@
 import pytest
+from test_mode import FakeClock
 
 from heating_panel.hold import HOLD_SECONDS, SendHold
-from test_mode import FakeClock
 
 
 @pytest.fixture
