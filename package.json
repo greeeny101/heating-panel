@@ -1,0 +1,25 @@
+{
+  "name": "heating-panel",
+  "private": true,
+  "version": "0.4.0",
+  "type": "module",
+  "scripts": {
+    "dev": "HA_WWW=../doorbell-panel/ha-config/www/heating-panel vite build --watch",
+    "build": "vite build",
+    "build:www": "HA_WWW=../doorbell-panel/ha-config/www/heating-panel vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:py": ".venv/bin/python -m pytest python-tests -q",
+    "integration:dev": "vite build && rsync -a --delete --exclude __pycache__ custom_components/heating_panel/ ../doorbell-panel/ha-config/custom_components/heating_panel/"
+  },
+  "dependencies": {
+    "lit": "^3.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0",
+    "vitest": "^2.1.9"
+  },
+  "license": "MIT"
+}

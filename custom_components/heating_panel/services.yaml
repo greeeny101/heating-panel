@@ -1,0 +1,31 @@
+send:
+  fields:
+    topic:
+      required: true
+      example: "zigbee2mqtt/Hive receiver"
+      selector:
+        text:
+    command:
+      required: true
+      selector:
+        select:
+          options:
+            - "set"
+            - "get"
+    payload:
+      required: true
+      example: '{"system_mode": ""}'
+      selector:
+        object:
+
+busy:
+  fields:
+    topic:
+      required: true
+      example: "zigbee2mqtt/Hive receiver"
+      selector:
+        text:
+    busy:
+      required: true
+      selector:
+        boolean:

@@ -1,0 +1,169 @@
+# Heating card for a dashboard: an example to adapt. Paste into a Manual card (or the dashboard's raw config),
+# then change the radiator chips to your own valves (one chip, and one battery chip, per radiator).
+# Needs: Mushroom, Vertical Stack In Card, Bubble Card and card-mod (all from HACS), and this integration, for
+# sensor.heating_mode and sensor.heating_panel_receiver (the "Receiver offline" chip).
+#
+# sensor.heating_mode shows only where a change ended up: it waits while the panel sends one, and until the
+# receiver has been quiet for 2 seconds, so the card never flashes the steps on the way (like Away on the way
+# to Boost). Its state is off, schedule, manual, boost, away or unknown; its attributes are setpoint,
+# hold_minutes, heating (the boiler is firing) and local_temperature.
+type: custom:vertical-stack-in-card
+cards:
+  # Status: tap opens the panel, hold opens the schedule.
+  - type: custom:mushroom-template-card
+    entity: sensor.heating_mode
+    primary: >-
+      {%- set t = state_attr('sensor.heating_mode', 'local_temperature') -%}
+      Heating{{ ' · ' ~ ('%.1f' % t) ~ '°' if t is number else '' }}
+    secondary: >-
+      {%- set e = 'sensor.heating_mode' -%}
+      {%- set mode = states(e) -%}
+      {%- set sp = state_attr(e, 'setpoint') | float(0) -%}
+      {%- set dur = state_attr(e, 'hold_minutes') | int(0) -%}
+      {%- if mode == 'schedule' -%}Schedule · {{ 'off for now' if sp <= 1 else ('%g' % sp) ~ '°' }}
+      {%- elif mode == 'manual' -%}Manual · {{ '%g' % sp }}°
+      {%- elif mode == 'boost' -%}Boost · {{ '%g' % sp }}° · {{ 'ending' if dur == 0 else dur ~ ' min left' }}
+      {%- elif mode == 'away' -%}Away · {{ '%g' % sp }}° · back {{ (now() + timedelta(minutes=dur)).strftime('%a %H:%M') }}
+      {%- elif mode == 'off' -%}Off · frost protection
+      {%- else -%}No news from the receiver
+      {%- endif -%}
+    icon: >-
+      {%- set mode = states('sensor.heating_mode') -%}
+      {%- if mode == 'off' -%}mdi:snowflake
+      {%- elif mode == 'away' -%}mdi:airplane
+      {%- elif mode == 'boost' -%}mdi:fire-circle
+      {%- else -%}mdi:radiator
+      {%- endif -%}
+    icon_color: >-
+      {%- if state_attr('sensor.heating_mode', 'heating') -%}amber
+      {%- elif states('sensor.heating_mode') == 'off' -%}blue
+      {%- else -%}grey
+      {%- endif -%}
+    tap_action:
+      action: navigate
+      navigation_path: /heating?kiosk=1
+    hold_action:
+      action: navigate
+      navigation_path: /heating?view=schedule&kiosk=1
+    # While the boiler is firing, a flickering flame in the top right corner; nothing when it's idle.
+    card_mod:
+      style: |
+        ha-card {
+          box-shadow: none !important;
+          position: relative;
+        }
+        {% if state_attr('sensor.heating_mode', 'heating') %}
+        ha-card::after {
+          content: "";
+          position: absolute;
+          top: 12px;
+          right: 14px;
+          width: 26px;
+          height: 26px;
+          background: var(--amber-color, #f5b83d);
+          -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17.66 11.2C17.43 10.9 17.15 10.64 16.89 10.38C16.22 9.78 15.46 9.35 14.82 8.72C13.33 7.26 13 4.85 13.95 3C13 3.23 12.17 3.75 11.46 4.32C8.87 6.4 7.85 10.07 9.07 13.22C9.11 13.32 9.15 13.42 9.15 13.55C9.15 13.77 9 13.97 8.8 14.05C8.57 14.15 8.33 14.09 8.14 13.93C8.08 13.88 8.04 13.83 8 13.76C6.87 12.33 6.69 10.28 7.45 8.64C5.78 10 4.87 12.3 5 14.47C5.06 14.97 5.12 15.47 5.29 15.97C5.43 16.57 5.7 17.17 6 17.7C7.08 19.43 8.95 20.67 10.96 20.92C13.1 21.19 15.39 20.8 17.03 19.32C18.86 17.66 19.5 15 18.56 12.72L18.43 12.46C18.22 12 17.66 11.2 17.66 11.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17.66 11.2C17.43 10.9 17.15 10.64 16.89 10.38C16.22 9.78 15.46 9.35 14.82 8.72C13.33 7.26 13 4.85 13.95 3C13 3.23 12.17 3.75 11.46 4.32C8.87 6.4 7.85 10.07 9.07 13.22C9.11 13.32 9.15 13.42 9.15 13.55C9.15 13.77 9 13.97 8.8 14.05C8.57 14.15 8.33 14.09 8.14 13.93C8.08 13.88 8.04 13.83 8 13.76C6.87 12.33 6.69 10.28 7.45 8.64C5.78 10 4.87 12.3 5 14.47C5.06 14.97 5.12 15.47 5.29 15.97C5.43 16.57 5.7 17.17 6 17.7C7.08 19.43 8.95 20.67 10.96 20.92C13.1 21.19 15.39 20.8 17.03 19.32C18.86 17.66 19.5 15 18.56 12.72L18.43 12.46C18.22 12 17.66 11.2 17.66 11.2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+          transform-origin: 50% 90%;
+          animation: boiler-flame 1.4s ease-in-out infinite;
+        }
+        @keyframes boiler-flame {
+          0%, 100% { transform: scale(1, 1) rotate(0deg); opacity: 1; }
+          25% { transform: scale(0.94, 1.07) rotate(-3deg); opacity: 0.88; }
+          50% { transform: scale(1.04, 0.95) rotate(2deg); opacity: 1; }
+          75% { transform: scale(0.97, 1.04) rotate(-1deg); opacity: 0.85; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          ha-card::after { animation: none; }
+        }
+        {% endif %}
+
+  # At a glance: each radiator (amber only while it's open AND the boiler is on).
+  # Problems show in red.
+  - type: custom:mushroom-chips-card
+    chips:
+      - type: template
+        icon: mdi:radiator
+        icon_color: >-
+          {{ 'amber' if state_attr('climate.bedroom_radiator_trv', 'hvac_action') == 'heating'
+             and state_attr('sensor.heating_mode', 'heating') else 'grey' }}
+        content: >-
+          Bedroom {{ state_attr('climate.bedroom_radiator_trv', 'current_temperature') }}°
+        tap_action:
+          action: navigate
+          navigation_path: /heating?radiator=bedroom&kiosk=1
+      - type: template
+        icon: mdi:radiator
+        icon_color: >-
+          {{ 'amber' if state_attr('climate.living_room_radiator_trv', 'hvac_action') == 'heating'
+             and state_attr('sensor.heating_mode', 'heating') else 'grey' }}
+        content: >-
+          Living room {{ state_attr('climate.living_room_radiator_trv', 'current_temperature') }}°
+        tap_action:
+          action: navigate
+          navigation_path: /heating?radiator=living%20room&kiosk=1
+      # Only shown when something needs attention.
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: sensor.heating_panel_receiver
+            state: unavailable
+        chip:
+          type: template
+          icon: mdi:access-point-network-off
+          icon_color: red
+          content: Receiver offline
+      - type: conditional
+        conditions:
+          - condition: numeric_state
+            entity: sensor.bedroom_radiator_trv_battery
+            below: 20
+        chip:
+          type: template
+          icon: mdi:battery-alert
+          icon_color: red
+          content: Bedroom battery
+      - type: conditional
+        conditions:
+          - condition: numeric_state
+            entity: sensor.living_room_radiator_trv_battery
+            below: 20
+        chip:
+          type: template
+          icon: mdi:battery-alert
+          icon_color: red
+          content: Living room battery
+    card_mod:
+      style: |
+        ha-card {
+          --chip-height: 35px;        /* big enough to tap and read on a phone */
+          --chip-font-size: 12px;
+          --chip-icon-size: 18px;
+          --chip-padding: 0 10px;
+          --chip-spacing: 6px;
+          margin: 10px;
+        }
+
+  # Launcher: the whole button opens the panel; the sub-buttons jump straight to a view.
+  - type: custom:bubble-card
+    card_type: button
+    button_type: name
+    name: Heating controls
+    icon: mdi:radiator
+    tap_action:
+      action: navigate
+      navigation_path: /heating?kiosk=1
+    button_action:
+      tap_action:
+        action: navigate
+        navigation_path: /heating?kiosk=1
+    sub_button:
+      - name: Schedule
+        icon: mdi:calendar-clock
+        tap_action:
+          action: navigate
+          navigation_path: /heating?view=schedule&kiosk=1
+    card_mod:
+      style: |
+        ha-card {
+          margin: 10px;
+        }

@@ -1,0 +1,138 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Heating panel",
+        "description": "Enter the receiver's topic in zigbee2mqtt: its base topic and friendly name, for example `zigbee2mqtt/Hive receiver`. The panel then opens at /heating; choose its radiators and other settings under Configure → Panel. Add the integration again for each receiver.",
+        "data": {
+          "topic": "Receiver topic"
+        }
+      }
+    },
+    "error": {
+      "empty": "Enter the receiver's topic.",
+      "wildcard": "A receiver's topic can't contain + or #.",
+      "command_topic": "Enter the receiver's own topic, without /set or /get."
+    },
+    "abort": {
+      "already_configured": "This receiver is already set up."
+    }
+  },
+  "services": {
+    "send": {
+      "name": "Send to receiver",
+      "description": "Sends a zigbee2mqtt command to a receiver set up in this integration (never retained).",
+      "fields": {
+        "topic": {
+          "name": "Receiver topic",
+          "description": "The receiver's zigbee2mqtt topic, as set up in this integration."
+        },
+        "command": {
+          "name": "Command",
+          "description": "set to change the receiver, get to ask it to report."
+        },
+        "payload": {
+          "name": "Payload",
+          "description": "The zigbee2mqtt payload. To read the mode, send system_mode with an empty value."
+        }
+      }
+    },
+    "busy": {
+      "name": "Panel busy",
+      "description": "Used by the heating panel while it sends a change, so the heating mode sensor shows only where the change ended up.",
+      "fields": {
+        "topic": {
+          "name": "Receiver topic",
+          "description": "The receiver's zigbee2mqtt topic, as set up in this integration."
+        },
+        "busy": {
+          "name": "Busy",
+          "description": "true when a change starts, false when it has finished."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Heating panel",
+        "menu_options": {
+          "panel": "Panel",
+          "tpi": "TPI boiler control"
+        }
+      },
+      "panel": {
+        "title": "Panel",
+        "description": "The heating panel for this receiver. Changes show after the page is reloaded.",
+        "data": {
+          "panel": "Set up the panel",
+          "url_path": "Address",
+          "sidebar": "Show in the sidebar",
+          "name": "Title",
+          "radiators": "Radiator valves",
+          "radiators_when": "List the radiators",
+          "receiver_entity": "Receiver's climate entity (optional)",
+          "theme": "Look",
+          "modes": "Schedule, Manual and Off buttons",
+          "boost": "Boost button",
+          "override": "Turning the dial on Schedule makes a temporary change",
+          "away": "Going away? button"
+        },
+        "data_description": {
+          "panel": "Untick to keep using a panel_custom panel from configuration.yaml instead. It also adds the receiver sensor the panel follows the receiver through.",
+          "url_path": "The panel opens at this address, e.g. heating for /heating. Dashboard buttons link to it.",
+          "sidebar": "Without it, the panel opens only from a link, such as a dashboard button. Anyone with the link can still open it.",
+          "name": "Shown above the dial, and in the sidebar.",
+          "radiators": "Each valve's battery and valve position sensors are found on its device. The list uses each valve's name without words like \"radiator\" or \"TRV\" at the end: rename the valve in Home Assistant to change it.",
+          "receiver_entity": "Only used for basic details if the receiver sensor has nothing yet. Blank: found from the topic.",
+          "away": "Keeps the house at a low temperature until you're back."
+        }
+      },
+      "tpi": {
+        "title": "TPI boiler control",
+        "description": "TPI gives the boiler a share of each cycle, more the further the room is below the target. It works by nudging the receiver's temperature either side of the target while the receiver runs its schedule, so if Home Assistant stops, the receiver keeps the room within the margin. It only runs on Schedule. Run it from one Home Assistant only.",
+        "data": {
+          "tpi": "Use TPI for this receiver",
+          "room_entity": "Room temperature (blank: the receiver's remote)",
+          "outdoor_entity": "Outdoor temperature (optional)",
+          "cycle_minutes": "Cycle length",
+          "coef_int": "Room coefficient",
+          "coef_ext": "Outdoor coefficient",
+          "min_on_minutes": "Shortest boiler run",
+          "min_off_minutes": "Shortest boiler rest",
+          "margin_on": "ON margin above the target",
+          "margin_off": "OFF margin below the target",
+          "prompt_start": "Start promptly at a new schedule slot"
+        },
+        "data_description": {
+          "coef_int": "Share of a cycle per degree the room is below the target. 0.6: 1° below runs the boiler 60% of each cycle.",
+          "coef_ext": "Share of a cycle per degree it's colder outside than the target, to make up for heat lost outdoors.",
+          "margin_on": "TPI writes the target plus this to run the boiler. Keep it well clear of the room (3° by default): Hive's own control stops early as the room nears its setpoint.",
+          "margin_off": "TPI writes the target minus this to rest the boiler.",
+          "min_off_minutes": "At least 5: Hive keeps a 5-minute gap between two runs anyway.",
+          "prompt_start": "When a slot begins and the room needs only a little heat, run the boiler for the shortest run straight away instead of waiting a cycle for it to add up. The extra is taken off the next cycle."
+        }
+      }
+    },
+    "error": {
+      "min_times": "The shortest run and rest together must fit in one cycle.",
+      "url_path_invalid": "Use lower-case letters, numbers and dashes, e.g. heating.",
+      "url_path_reserved": "Home Assistant already uses that address. Choose another one.",
+      "url_path_taken": "Another receiver's panel already has that address."
+    }
+  },
+  "selector": {
+    "radiators_when": {
+      "options": {
+        "heating": "Only while the boiler is heating",
+        "always": "Always"
+      }
+    },
+    "theme": {
+      "options": {
+        "porch": "The panel's own dark look",
+        "ha": "Follow the Home Assistant theme"
+      }
+    }
+  }
+}
