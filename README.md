@@ -41,6 +41,10 @@ and SONOFF TRV-ZBT radiator valves.
   away. They're shared by everyone, on every device.
 - **Checks every change.** After each command the panel reads the receiver back. If something didn't take,
   it says so in plain words, and a boost that didn't take is cancelled rather than left running.
+- **Optional TPI boiler control** (off until you turn it on). The boiler gets a share of each 10-minute cycle,
+  based on how far the room is below the target and how cold it is outside, instead of the receiver's plain
+  on/off. If Home Assistant stops, the receiver carries on by itself. See
+  [TPI boiler control](#tpi-boiler-control-optional).
 
 ## Requirements
 
