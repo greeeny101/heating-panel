@@ -1,12 +1,25 @@
 # Heating panel for Home Assistant
 
+[![Open your Home Assistant and add this repository to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=greeeny101&repository=heating-panel&category=integration)
+
 A full-screen heating control for Home Assistant, built for phones and the Companion app. One round dial, a
 few big buttons, and a schedule editor. Simple enough for anyone in the house.
 
 It talks to a zigbee2mqtt heating receiver over MQTT, and to radiator valves through Home Assistant.
 
 **Tested with:** Hive SLR1c receiver (heating only) with an SLT3C remote, zigbee2mqtt 2.x, and Moes BRT-100
-radiator valves.
+and SONOFF TRV-ZBT radiator valves.
+
+<p>
+  <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/dial.jpg" width="200" alt="The dial: Schedule at 19.5°, room 19.4°, heating now, with the mode buttons and today's schedule below">
+  <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/boost.jpg" width="200" alt="Boost: choose 15 minutes to 2 hours, and a temperature">
+  <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/away.jpg" width="200" alt="Going away: the day and time you're back, and the temperature while away">
+</p>
+<p>
+  <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/schedule.jpg" width="200" alt="The week's schedule, one bar per day">
+  <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/day.jpg" width="200" alt="One day's schedule: up to 6 changes, copy to other days">
+  <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/change.jpg" width="200" alt="Editing one change: its start time, and heating on at a temperature or off">
+</p>
 
 ## What it does
 
@@ -38,10 +51,14 @@ radiator valves.
 
 ### With HACS
 
-1. In HACS, open the ⋮ menu → **Custom repositories**. Add `https://github.com/greeeny101/heating-panel` as an
-   **Integration**.
-2. Find **Heating panel** in HACS and download it.
-3. Restart Home Assistant.
+Heating panel isn't in HACS's default list yet (it's waiting for review), so add it as a custom repository first.
+
+Click the blue button at the top of this page: it opens your Home Assistant at this repository in HACS. Or,
+in HACS, open the ⋮ menu → **Custom repositories** and add `https://github.com/greeeny101/heating-panel` as an
+**Integration**. Then:
+
+1. Download **Heating panel** in HACS.
+2. Restart Home Assistant.
 
 ### By hand
 
@@ -222,7 +239,7 @@ Everything except `receiver.topic` is optional:
 - **Boost lengths in the boost sheet go up to 2 hours.** The remote's display goes up to 6 hours.
 - **Schedule backup is per device.** The "put back the schedule" backup is kept in the browser that made
   the first change.
-- **Heating only.** Hot water receivers (SLR2) aren't supported yet.
+- **Heating only.** It's heating only for now: the SLR2's hot water isn't supported yet. If that's something you'd use, let me know.
 
 ## Troubleshooting
 
