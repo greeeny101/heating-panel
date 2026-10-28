@@ -1,0 +1,3 @@
+# The tests in tests/: the integration running inside Home Assistant (needs Python 3.14).
+# Unpinned on purpose: CI runs them against the newest Home Assistant release, and its beta.
+pytest-homeassistant-custom-component

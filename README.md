@@ -291,7 +291,7 @@ npm install
 npm run build        # builds the panel into custom_components/heating_panel/frontend/
 npm run typecheck
 npm test             # unit tests (npm run test:watch to rerun on save)
-npm run test:py      # the integration's plain-Python parts: topics, mode, schedule, TPI, panel config (python3 -m venv .venv && .venv/bin/pip install pytest first)
+npm run test:py      # the integration's plain-Python parts: topics, mode, schedule, TPI, panel config (python3 -m venv .venv && .venv/bin/pip install pytest pytest-asyncio first)
 npm run integration:dev   # build, and copy the integration into the dev Home Assistant (then restart it)
 npm run dev          # rebuild on save into the dev Home Assistant's www folder, for a YAML panel there
 ```
@@ -303,6 +303,19 @@ The tests run the panel's receiver code against a fake receiver (`test/fake-rece
 as the real one does in [docs/receiver-protocol.md](docs/receiver-protocol.md), including the ways it has
 lost commands. No Home Assistant, MQTT or boiler is involved. When the real receiver does something new,
 add it to the fake and write a test for it.
+
+`tests/` runs the integration inside a test Home Assistant
+([pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component)),
+with MQTT mocked: setting up a receiver, the Configure pages, the panel, the sensors, the services, and moving from
+the YAML setup. The tests workflow runs it against the newest Home Assistant release and the newest beta, on
+every push and every Thursday morning (the monthly beta is out by Wednesday evening), so a Home Assistant change
+that breaks the integration shows up a week before the release. It needs Python 3.14; with Docker:
+
+```sh
+docker run --rm -v "$PWD:/repo" -w /repo -e PYTHONDONTWRITEBYTECODE=1 python:3.14 sh -c 'pip install -q -r requirements_test.txt &&
+  pip install -q $(python -c "import json, pathlib, homeassistant.components.frontend as f; print(\" \".join(json.loads((pathlib.Path(f.__file__).parent / \"manifest.json\").read_text())[\"requirements\"]))") &&
+  python -m pytest -p no:cacheprovider tests -q'
+```
 
 The dev Home Assistant (port 8124) is shared with the doorbell panel. Its config is in
 `../doorbell-panel/ha-config`.
