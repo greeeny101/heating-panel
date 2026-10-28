@@ -231,3 +231,45 @@ async def test_send_only_to_set_up_receivers(hass: HomeAssistant, mqtt_mock: Mqt
             blocking=True,
         )
     mqtt_mock.async_publish.assert_not_called()
+
+
+async def test_panel_follows_a_renamed_receiver_sensor(hass: HomeAssistant, mqtt_mock: MqttMockHAClient) -> None:
+    """Moving from YAML can leave the new sensor as sensor.heating_panel_receiver_2; renaming it mustn't break the
+    panel (it did in 0.4.0, until the options were saved again)."""
+    entry = await setup_receiver(hass)
+    er.async_get(hass).async_update_entity("sensor.heating_panel_receiver", new_entity_id="sensor.receiver_reports")
+    await hass.async_block_till_done()
+    assert _panel(hass)["config"]["receiver"]["state_entity"] == "sensor.receiver_reports"
+    # Only the panel was registered again: the entry wasn't reloaded.
+    assert entry.state is ConfigEntryState.LOADED
+
+
+async def test_renamed_radiator_is_kept(hass: HomeAssistant, mqtt_mock: MqttMockHAClient) -> None:
+    z2m = MockConfigEntry(domain="mqtt")
+    z2m.add_to_hass(hass)
+    bedroom = _valve(hass, z2m, "Bedroom radiator TRV", "0x1", position=True)
+    entry = await setup_receiver(hass, {"panel": True, "url_path": "heating", "radiators": [bedroom]})
+
+    entities = er.async_get(hass)
+    entities.async_update_entity(bedroom, new_entity_id="climate.main_bedroom")
+    await hass.async_block_till_done()
+    assert entry.options["radiators"] == ["climate.main_bedroom"]
+    assert _panel(hass)["config"]["radiators"][0]["entity"] == "climate.main_bedroom"
+
+    # Its battery sensor too (found on the device, not chosen in the options).
+    entities.async_update_entity("sensor.0x1_battery", new_entity_id="sensor.main_bedroom_battery")
+    await hass.async_block_till_done()
+    assert _panel(hass)["config"]["radiators"][0]["battery"] == "sensor.main_bedroom_battery"
+
+
+async def test_other_renames_change_nothing(hass: HomeAssistant, mqtt_mock: MqttMockHAClient) -> None:
+    z2m = MockConfigEntry(domain="mqtt")
+    z2m.add_to_hass(hass)
+    kitchen = _valve(hass, z2m, "Kitchen radiator TRV", "0x9", position=False)
+    entry = await setup_receiver(hass)
+    options = dict(entry.options)
+    before = _panel(hass)
+    er.async_get(hass).async_update_entity(kitchen, new_entity_id="climate.galley")
+    await hass.async_block_till_done()
+    assert dict(entry.options) == options
+    assert _panel(hass) == before

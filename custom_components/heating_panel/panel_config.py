@@ -15,8 +15,12 @@ from .const import (
     CONF_BOOST,
     CONF_MODES,
     CONF_NAME,
+    CONF_OUTDOOR_ENTITY,
     CONF_OVERRIDE,
+    CONF_RADIATORS,
     CONF_RADIATORS_WHEN,
+    CONF_RECEIVER_ENTITY,
+    CONF_ROOM_ENTITY,
     CONF_THEME,
     DEFAULT_NAME,
 )
@@ -118,3 +122,23 @@ def panel_config(
         "radiators": [{k: v for k, v in vars(r).items() if v is not None} for r in radiators],
         "radiators_when": options.get(CONF_RADIATORS_WHEN, RADIATORS_WHEN[0]),
     }
+
+
+def config_entities(config: dict[str, Any]) -> set[str]:
+    """Every entity the panel's config names, so a rename of any of them can be followed."""
+    receiver = config.get("receiver", {})
+    ids = {receiver.get("entity"), receiver.get("state_entity")}
+    for radiator in config.get("radiators", []):
+        ids |= {radiator.get("entity"), radiator.get("position"), radiator.get("battery")}
+    return {i for i in ids if i}
+
+
+def renamed_options(options: dict[str, Any], old: str, new: str) -> dict[str, Any] | None:
+    """The options with entity `old` renamed to `new`, or None if they don't name it."""
+    changed = dict(options)
+    for key in (CONF_RECEIVER_ENTITY, CONF_ROOM_ENTITY, CONF_OUTDOOR_ENTITY):
+        if changed.get(key) == old:
+            changed[key] = new
+    if old in changed.get(CONF_RADIATORS, []):
+        changed[CONF_RADIATORS] = [new if e == old else e for e in changed[CONF_RADIATORS]]
+    return changed if changed != options else None

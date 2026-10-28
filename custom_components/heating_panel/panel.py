@@ -2,12 +2,14 @@
 
 The panel's config comes from the integration's options (see panel_config.py), with the entities looked up here:
 the receiver sensor this integration makes, and each radiator valve's battery and position sensors on its device.
-The file's address carries the integration's version, so browsers fetch it again after an update.
+The file's address carries the integration's version, so browsers fetch it again after an update. The config
+names entities by id, so __init__.py registers the panel again when one of them is renamed.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from homeassistant.components import frontend, panel_custom
 from homeassistant.components.http import StaticPathConfig
@@ -89,8 +91,9 @@ def url_path(entry: ConfigEntry) -> str:
     return entry.options.get(CONF_URL_PATH) or DEFAULT_URL_PATH
 
 
-async def async_register(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Register this receiver's panel. False if its address is already in use (e.g. by panel_custom YAML)."""
+async def async_register(hass: HomeAssistant, entry: ConfigEntry) -> dict[str, Any] | None:
+    """Register this receiver's panel, returning its config. None if its address is already in use (e.g. by
+    panel_custom YAML)."""
     path = url_path(entry)
     if path in hass.data.get(frontend.DATA_PANELS, {}):
         LOGGER.warning(
@@ -98,7 +101,7 @@ async def async_register(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             "Remove that one, or choose another address under Configure → Panel",
             path,
         )
-        return False
+        return None
     o = entry.options
     topic = entry.data[CONF_TOPIC]
     config = panel_config(
@@ -120,7 +123,7 @@ async def async_register(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         config=config,
         require_admin=False,
     )
-    return True
+    return config
 
 
 def remove(hass: HomeAssistant, entry: ConfigEntry) -> None:

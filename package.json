@@ -1,7 +1,7 @@
 {
   "name": "heating-panel",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "type": "module",
   "scripts": {
     "dev": "HA_WWW=../doorbell-panel/ha-config/www/heating-panel vite build --watch",

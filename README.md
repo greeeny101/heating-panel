@@ -69,6 +69,33 @@ in HACS, open the ⋮ menu → **Custom repositories** and add `https://github.c
 Copy `custom_components/heating_panel` from this repository to your Home Assistant `config/custom_components/`
 folder, then restart Home Assistant.
 
+## Moving from the YAML setup
+
+Skip this if you're new to the heating panel. It's for anyone who already has it in `configuration.yaml`, from
+before version 0.4: a `panel_custom` entry and a `heating panel receiver` MQTT sensor.
+
+Install it as above first. HACS replaces a hand-copied `custom_components/heating_panel` folder, and your YAML
+setup keeps working meanwhile: the integration doesn't add its own panel until you ask it to. Then:
+
+1. Remove the heating panel's `panel_custom` entry, the `heating panel receiver` MQTT sensor, and its
+   `recorder: exclude:` line from `configuration.yaml`.
+2. Restart Home Assistant.
+3. Delete the old sensor's leftover entry, so the new one can have its name: in **Settings → Devices & services →
+   Entities**, find `sensor.heating_panel_receiver` (it says it's no longer being provided), open it, and choose
+   **Delete**.
+4. Go to **Settings → Devices & services → Heating panel → Configure → Panel**, tick **Set up the panel**, and
+   choose your radiators. If Heating panel isn't listed there, you never added the integration: follow
+   [Set up](#set-up) below instead, which sets the panel up straight away.
+5. Fully close and reopen the Companion app.
+
+The new receiver sensor takes the old one's name, `sensor.heating_panel_receiver`, so dashboard cards keep
+working. If it came out as `sensor.heating_panel_receiver_2` (the old entry was still there), delete the old
+entry as in step 3, then rename the new sensor to `sensor.heating_panel_receiver`. The panel follows the rename by
+itself (from version 0.4.1); reload any page that has it open.
+
+The radiators are now named after their devices, so check their names, and any dashboard links like
+`/heating?radiator=…`. You can also delete `config/www/heating-panel/`: the integration serves the panel itself.
+
 ## Set up
 
 1. Go to **Settings → Devices & services → Add integration → Heating panel**.
@@ -137,21 +164,6 @@ They're shared by everyone, on every device:
 - `input_number.heating_panel_boost_minutes`
 - `input_number.heating_panel_boost_temperature`
 - `input_number.heating_panel_away_temperature`
-
-## Moving from the YAML setup
-
-Before version 0.4 the panel was set up with `panel_custom` and an MQTT sensor in `configuration.yaml`. After
-updating, that setup keeps working: the integration doesn't add its own panel until you ask it to. To move over:
-
-1. Remove the heating panel's `panel_custom` entry, and the `heating panel receiver` MQTT sensor (and its
-   `recorder: exclude:` line), from `configuration.yaml`.
-2. Restart Home Assistant.
-3. Go to **Heating panel → Configure → Panel**, tick **Set up the panel**, and choose your radiators.
-4. Fully close and reopen the Companion app.
-
-The new receiver sensor takes the old one's name, `sensor.heating_panel_receiver`, so dashboard cards keep
-working. If it came out as `sensor.heating_panel_receiver_2` (the old one was still there), rename it in
-Settings → Entities. You can also delete `config/www/heating-panel/`: the integration serves the panel itself.
 
 ## Setting the panel up in YAML
 

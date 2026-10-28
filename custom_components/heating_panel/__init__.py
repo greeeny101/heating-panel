@@ -21,9 +21,9 @@ import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.core import Event, HomeAssistant, ServiceCall, callback
 from homeassistant.exceptions import ServiceValidationError
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import config_validation as cv, entity_registry as er
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.typing import ConfigType
@@ -45,6 +45,7 @@ from .const import (
 )
 from .controller import TpiController
 from .hold import SendHold
+from .panel_config import config_entities, renamed_options
 from .publish import async_publish_command
 from .topics import COMMANDS, TopicError, check_receiver, command_topic
 
@@ -131,9 +132,41 @@ async def async_setup_entry(hass: HomeAssistant, entry: HeatingPanelEntry) -> bo
     entry.async_on_unload(entry.add_update_listener(_options_changed))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     # After the platforms, so the receiver sensor is in the entity registry.
-    if entry.options.get(CONF_PANEL) and await panel.async_register(hass, entry):
+    panel_entities: set[str] = set()
+    if entry.options.get(CONF_PANEL) and (config := await panel.async_register(hass, entry)):
         entry.async_on_unload(lambda: panel.remove(hass, entry))
+        panel_entities |= config_entities(config)
+    entry.async_on_unload(_follow_renames(hass, entry, panel_entities))
     return True
+
+
+@callback
+def _follow_renames(hass: HomeAssistant, entry: HeatingPanelEntry, panel_entities: set[str]) -> Callable[[], None]:
+    """Keep working when an entity is renamed in Settings → Entities.
+
+    An entity chosen in the options (a radiator, TPI's room sensor...) is renamed there, which reloads the entry.
+    One the integration found itself (the receiver sensor, a valve's battery...) only needs the panel registered
+    again with the new name, which leaves TPI running.
+    """
+
+    async def register_again() -> None:
+        panel.remove(hass, entry)
+        panel_entities.clear()
+        if config := await panel.async_register(hass, entry):
+            panel_entities.update(config_entities(config))
+
+    @callback
+    def renamed(event: Event[er.EventEntityRegistryUpdatedData]) -> None:
+        data = event.data
+        if data["action"] != "update" or "old_entity_id" not in data:
+            return
+        old, new = data["old_entity_id"], data["entity_id"]
+        if (options := renamed_options(dict(entry.options), old, new)) is not None:
+            hass.config_entries.async_update_entry(entry, options=options)
+        elif old in panel_entities:
+            entry.async_create_task(hass, register_again(), f"{DOMAIN} panel after rename")
+
+    return hass.bus.async_listen(er.EVENT_ENTITY_REGISTRY_UPDATED, renamed)
 
 
 async def _options_changed(hass: HomeAssistant, entry: HeatingPanelEntry) -> None:

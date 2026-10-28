@@ -1,4 +1,13 @@
-from heating_panel.panel_config import Radiator, Sibling, find_sensors, panel_config, room_name, url_path_error
+from heating_panel.panel_config import (
+    Radiator,
+    Sibling,
+    config_entities,
+    find_sensors,
+    panel_config,
+    renamed_options,
+    room_name,
+    url_path_error,
+)
 
 
 def test_room_name_drops_device_words():
@@ -82,3 +91,40 @@ def test_config_defaults():
         "topic": "zigbee2mqtt/Hive receiver",
         "controls": {"modes": True, "boost": True, "override": True, "away": True},
     }
+
+
+def test_config_entities():
+    config = panel_config(
+        {},
+        "zigbee2mqtt/Hive receiver",
+        "sensor.heating_panel_receiver",
+        "climate.hive_receiver",
+        [Radiator("climate.bed", "Bedroom", "sensor.bed_position", "sensor.bed_battery"), Radiator("climate.back")],
+    )
+    assert config_entities(config) == {
+        "sensor.heating_panel_receiver",
+        "climate.hive_receiver",
+        "climate.bed",
+        "sensor.bed_position",
+        "sensor.bed_battery",
+        "climate.back",
+    }
+
+
+def test_renamed_options():
+    options = {
+        "radiators": ["climate.bed", "climate.back"],
+        "receiver_entity": "climate.hive",
+        "room_entity": "sensor.hall",
+        "tpi": True,
+    }
+    assert renamed_options(options, "climate.back", "climate.office") == {
+        **options,
+        "radiators": ["climate.bed", "climate.office"],
+    }
+    assert renamed_options(options, "sensor.hall", "sensor.landing") == {**options, "room_entity": "sensor.landing"}
+    assert renamed_options(options, "climate.hive", "climate.boiler")["receiver_entity"] == "climate.boiler"
+    # Not one of ours: nothing to change.
+    assert renamed_options(options, "sensor.kitchen", "sensor.galley") is None
+    # The original is left alone.
+    assert options["radiators"] == ["climate.bed", "climate.back"]
