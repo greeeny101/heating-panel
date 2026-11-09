@@ -843,7 +843,7 @@ recorder:
                 remote (plane icon).
               </p>
               <p class="sheet-label">Back</p>
-              <div class="chips">
+              <div class="chips two">
                 ${[0, 1].map((n) => {
                   const t = this.dayFromToday(n);
                   return html`<button class="chip" aria-pressed=${String(t === this.awayDay)} @click=${() => (this.awayDay = t)}>
@@ -2058,6 +2058,9 @@ recorder:
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
+    }
+    .chips.two {
+      grid-template-columns: repeat(2, 1fr);
     }
     .chip {
       height: 48px;
