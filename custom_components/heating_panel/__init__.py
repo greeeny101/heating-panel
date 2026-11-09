@@ -48,6 +48,7 @@ from .hold import SendHold
 from .panel_config import config_entities, renamed_options
 from .publish import async_publish_command
 from .topics import COMMANDS, TopicError, check_receiver, command_topic
+from .z2m import HEAT
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 PLATFORMS = [Platform.SENSOR, Platform.SWITCH]
@@ -94,10 +95,12 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         payload = call.data[ATTR_PAYLOAD]
         if command == "set":
             hold_for(topic).sent()
-            # A temperature on its own is the panel's dial: tell TPI exactly what was chosen. (Boost, Manual and
-            # Off send other settings with it, and aren't a new target.)
-            if set(payload) == {SETPOINT}:
-                async_dispatcher_send(hass, panel_setpoint_signal(topic), float(payload[SETPOINT]))
+            # A temperature on its own is the panel's dial (to the heating endpoint, on a dual-channel receiver):
+            # tell TPI exactly what was chosen. (Boost, Manual and Off send other settings with it, and aren't a new
+            # target.)
+            (key, value), *rest = payload.items()
+            if not rest and key in (SETPOINT, f"{SETPOINT}{HEAT}"):
+                async_dispatcher_send(hass, panel_setpoint_signal(topic), float(value))
         await async_publish_command(hass, topic, command, payload)
 
     async def busy(call: ServiceCall) -> None:

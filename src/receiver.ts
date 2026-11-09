@@ -1,14 +1,17 @@
 import { DAYS, dayIndex, hhmm, padToSlots, sameDay, setpointAt, type Day, type WeekSchedule } from "./schedule";
 import type { HomeAssistant, MqttMessage } from "./types";
+import { MAX_HOLD, NO_END, fromZ2m, holdLengthWrite, isDualChannel, isNoEnd, toZ2m } from "./z2m";
 
-/** What zigbee2mqtt reports for the receiver. See docs/receiver-protocol.md. */
+export { MAX_HOLD, NO_END } from "./z2m";
+
+/** What zigbee2mqtt reports for the receiver, with the heating-only names (see z2m.ts). See docs/receiver-protocol.md. */
 export interface ReceiverReport {
   system_mode?: string;
   running_state?: string;
   occupied_heating_setpoint?: number;
   temperature_setpoint_hold?: boolean;
-  /** Minutes left on a hold; the receiver counts it down. 65535 means no end. */
-  temperature_setpoint_hold_duration?: number;
+  /** Minutes left on a hold; the receiver counts it down. "No end" is 65535, or null from zigbee2mqtt 2.6.1 on. */
+  temperature_setpoint_hold_duration?: number | null;
   local_temperature?: number;
 }
 
@@ -38,11 +41,8 @@ export interface TpiState {
   demand: number;
 }
 
-export const NO_END = 65535;
 /** The receiver's frost / "off" temperature, as the remote sets it when switched off. */
 const OFF_SETPOINT = 1;
-/** Longest timed hold the receiver can count down (minutes, about 45 days). */
-export const MAX_HOLD = 65534;
 /**
  * Away is a long, low boost. It's told apart from a real boost by its temperature or length: a boost
  * is never this cool, nor longer than the remote's 6-hour display.
@@ -63,6 +63,7 @@ const message = (err: unknown) => (err instanceof Error ? err.message : String((
 
 /** A holiday set on the remote makes the receiver refuse other changes until it's cancelled there. */
 const HOLIDAY_HINT = "If a holiday is set on the remote (plane icon), cancel it there first.";
+const TOO_LONG = "That's more than 24 hours away. For longer, set a holiday on the remote.";
 
 /** A command that didn't take; the message is written for the person using the panel. */
 export class CommandError extends Error {}
@@ -104,7 +105,7 @@ export function decodeMode(r: ReceiverReport): ReceiverMode {
     case "heat": {
       if (r.temperature_setpoint_hold === false) return "schedule";
       const d = r.temperature_setpoint_hold_duration;
-      if (r.temperature_setpoint_hold === true && typeof d === "number") return d === NO_END ? "manual" : "schedule";
+      if (r.temperature_setpoint_hold === true && d !== undefined) return isNoEnd(d) ? "manual" : "schedule";
       return "unknown";
     }
     default:
@@ -128,6 +129,8 @@ export class ReceiverLink {
   busy = false;
   /** Set when the receiver changes away from what was just asked for. */
   unexpected = "";
+  /** A dual-channel receiver (heating and hot water), seen from its reports: commands go to its heating endpoint. */
+  dualChannel = false;
 
   /**
    * When the current hold ends (ms). The receiver doesn't report its count by itself, only when asked,
@@ -280,7 +283,7 @@ export class ReceiverLink {
    */
   get holdEnds(): number | null {
     const d = this.report.temperature_setpoint_hold_duration;
-    if (d === undefined || d === NO_END || !this.report.temperature_setpoint_hold) return null;
+    if (d === undefined || isNoEnd(d) || !this.report.temperature_setpoint_hold) return null;
     return this.holdEnd;
   }
 
@@ -311,12 +314,14 @@ export class ReceiverLink {
 
   /**
    * Away until `until`: a boost at a low temperature for the minutes until then. The receiver counts it
-   * down and goes back to its schedule by itself, without the remote or Home Assistant.
+   * down and goes back to its schedule by itself, without the remote or Home Assistant. Up to 24 hours
+   * (MAX_HOLD): zigbee2mqtt won't pass a longer hold. Longer is the remote's holiday.
    */
   away(until: Date, temp: number): Promise<void> {
     // The hold ends `minutes` after it starts, so rounding puts the end within half a minute of `until`.
-    const minutes = () => Math.min(MAX_HOLD, Math.round((until.getTime() - Date.now()) / 60_000));
+    const minutes = () => Math.round((until.getTime() - Date.now()) / 60_000);
     if (minutes() < 1) return Promise.reject(new CommandError("Pick a time in the future."));
+    if (minutes() > MAX_HOLD) return Promise.reject(new CommandError(TOO_LONG));
     return this.timedBoost("away", minutes, temp);
   }
 
@@ -327,6 +332,7 @@ export class ReceiverLink {
    */
   private timedBoost(mode: ReceiverMode, minutes: number | (() => number), temp: number): Promise<void> {
     const length = typeof minutes === "number" ? () => minutes : minutes;
+    if (length() > MAX_HOLD) return Promise.reject(new CommandError(TOO_LONG));
     return this.run(mode, async () => {
       if (this.report.temperature_setpoint_hold !== false) {
         await this.set({ system_mode: "heat", temperature_setpoint_hold: false });
@@ -365,12 +371,25 @@ export class ReceiverLink {
     });
   }
 
-  /** Hold with no end, then the temperature on its own (the hold resets it to the schedule's). */
+  /**
+   * Hold with no end, then the temperature on its own (the hold resets it to the schedule's). Like a boost's
+   * length, "no end" is written before the hold switches on, from Schedule: a hold that's already on (a
+   * temporary change counting down to the next slot) would keep its count. zigbee2mqtt 2.8 and later refuse 65535
+   * by name, so it goes as a raw write (see z2m.ts).
+   */
   manual(temp: number): Promise<void> {
     return this.run("manual", async () => {
-      await this.set({ system_mode: "heat", temperature_setpoint_hold: true, temperature_setpoint_hold_duration: NO_END });
+      if (this.report.temperature_setpoint_hold !== false) {
+        await this.set({ system_mode: "heat", temperature_setpoint_hold: false });
+        if (!(await this.until("temperature_setpoint_hold", (v) => v === false)))
+          throw new CommandError(`The receiver didn't get ready. ${HOLIDAY_HINT}`);
+        await sleep(1000);
+      }
+      await this.set({ system_mode: "heat", ...holdLengthWrite(NO_END), temperature_setpoint_hold: true });
       if (!(await this.until("temperature_setpoint_hold", (v) => v === true)))
         throw new CommandError(`The receiver didn't switch to manual. ${HOLIDAY_HINT}`);
+      if (!(await this.until("temperature_setpoint_hold_duration", isNoEnd, 3)))
+        throw new CommandError("The receiver took Manual with an end time, so it will go back to the schedule by itself.");
       await sleep(1000);
       await this.setpoint(temp);
     });
@@ -491,6 +510,7 @@ export class ReceiverLink {
    */
   private async send(command: "set" | "get", payload: Record<string, unknown>): Promise<unknown> {
     const hass = this.getHass();
+    payload = toZ2m(payload, this.dualChannel);
     // The integration's service first, whatever hass.services says (it can be stale after a restart; see
     // tellBusy): only when Home Assistant says it doesn't exist, fall back to mqtt.publish.
     try {
@@ -573,13 +593,20 @@ export class ReceiverLink {
     }
   };
 
-  private onReport(p: Record<string, unknown>, fresh = true): void {
+  private onReport(raw: Record<string, unknown>, fresh = true): void {
+    if (!this.dualChannel && isDualChannel(raw)) {
+      this.dualChannel = true;
+      // The first reads went without an endpoint, so zigbee2mqtt sent them to the receiver's first one, which may
+      // be the hot water's. Ask the heating for its schedule (the state comes with every message).
+      if (this.scheduleState !== "done") this.requestSchedule();
+    }
+    const p = fromZ2m(raw);
     const r = this.report as Record<string, unknown>;
     for (const k of STATE_FIELDS) if (k in p) r[k] = p[k];
     // The end of the hold: never later than the earliest estimate (see holdEnd).
     if ("temperature_setpoint_hold_duration" in p || "temperature_setpoint_hold" in p) {
       const d = this.report.temperature_setpoint_hold_duration;
-      if (!this.report.temperature_setpoint_hold || d === undefined || d === NO_END) this.holdEnd = null;
+      if (!this.report.temperature_setpoint_hold || d === undefined || isNoEnd(d)) this.holdEnd = null;
       else {
         const estimate = Date.now() + (d + 1) * 60_000;
         this.holdEnd = this.holdEnd === null ? estimate : Math.min(this.holdEnd, estimate);

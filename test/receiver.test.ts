@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CommandError, NO_END, ReceiverLink, decodeMode } from "../src/receiver";
+import { holdLengthWrite } from "../src/z2m";
 import { FakeReceiver, TOPIC, settle } from "./fake-receiver";
 
 const BOOST_KEYS = ["system_mode", "temperature_setpoint_hold_duration", "temperature_setpoint_hold", "occupied_heating_setpoint"];
@@ -25,6 +26,9 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
+  // Nothing the panel sent was refused by zigbee2mqtt, or sent to a dual-channel receiver without its endpoint.
+  expect(fake.errors).toEqual([]);
+  expect(fake.stray).toEqual([]);
   link.stop();
   vi.useRealTimers();
 });
@@ -34,6 +38,8 @@ describe("decodeMode", () => {
     [{ system_mode: "off" }, "off"],
     [{ system_mode: "heat", temperature_setpoint_hold: false }, "schedule"],
     [{ system_mode: "heat", temperature_setpoint_hold: true, temperature_setpoint_hold_duration: NO_END }, "manual"],
+    // zigbee2mqtt 2.6.1 and later report "no end" as null.
+    [{ system_mode: "heat", temperature_setpoint_hold: true, temperature_setpoint_hold_duration: null }, "manual"],
     [{ system_mode: "emergency_heating", temperature_setpoint_hold: true }, "boost"],
     // A temperature written over zigbee2mqtt on Schedule: held until the next slot.
     [{ system_mode: "heat", temperature_setpoint_hold: true, temperature_setpoint_hold_duration: 516 }, "schedule"],
@@ -207,7 +213,7 @@ describe("telling boost and away apart", () => {
   it.each([
     [22, 30, "boost"],
     [14, 30, "away"],
-    [22, 2000, "away"],
+    [22, 400, "away"],
     [16, 60, "away"],
   ])("%d° for %d min is %s", async (setpoint, minutes, mode) => {
     fake.external(boosting(setpoint, minutes));
@@ -280,29 +286,29 @@ describe("boost", () => {
 });
 
 describe("away", () => {
-  const tomorrowAt6pm = () => new Date(2026, 9, 11, 18, 0);
+  const todayAt6pm = () => new Date(2026, 9, 10, 18, 0);
 
   it("is a low boost lasting until the chosen time", async () => {
     vi.setSystemTime(new Date(2026, 9, 10, 7, 35, 54));
-    expect((await settle(link.away(tomorrowAt6pm(), 14))).ok).toBe(true);
+    expect((await settle(link.away(todayAt6pm(), 14))).ok).toBe(true);
     const sent = fake.sets.find(isBoostMessage)!;
-    // 18:00 tomorrow is 2064.1 minutes away: rounded, so the end lands within half a minute of it.
-    expect(sent).toMatchObject({ temperature_setpoint_hold_duration: 2064, occupied_heating_setpoint: 14 });
+    // 18:00 is 624.1 minutes away: rounded, so the end lands within half a minute of it.
+    expect(sent).toMatchObject({ temperature_setpoint_hold_duration: 624, occupied_heating_setpoint: 14 });
     expect(link.mode).toBe("away");
   });
 
   it("shows the end as the chosen time, though the receiver's count reads a minute low", async () => {
     vi.setSystemTime(new Date(2026, 9, 10, 7, 35, 54));
-    await settle(link.away(tomorrowAt6pm(), 14));
-    // The count dropped to 2063 seconds after the start.
-    expect(fake.state.temperature_setpoint_hold_duration).toBe(2063);
+    await settle(link.away(todayAt6pm(), 14));
+    // The count dropped to 623 seconds after the start.
+    expect(fake.state.temperature_setpoint_hold_duration).toBe(623);
     const ends = link.holdEnds!;
-    expect(Math.abs(ends - tomorrowAt6pm().getTime())).toBeLessThan(60_000);
-    expect(Math.round(ends / 60_000) * 60_000).toBe(tomorrowAt6pm().getTime());
+    expect(Math.abs(ends - todayAt6pm().getTime())).toBeLessThan(60_000);
+    expect(Math.round(ends / 60_000) * 60_000).toBe(todayAt6pm().getTime());
   });
 
   it("keeps the same end time when zigbee2mqtt repeats its cached count", async () => {
-    await settle(link.away(tomorrowAt6pm(), 14));
+    await settle(link.away(todayAt6pm(), 14));
     const ends = link.holdEnds;
     // A temperature report ten seconds later carries the same, cached count.
     await vi.advanceTimersByTimeAsync(10_000);
@@ -313,18 +319,18 @@ describe("away", () => {
 
   it("recalculates the length on a second try, so it still ends on time", async () => {
     fake.boostFaults = ["zero"];
-    expect((await settle(link.away(tomorrowAt6pm(), 14))).ok).toBe(true);
+    expect((await settle(link.away(todayAt6pm(), 14))).ok).toBe(true);
     const [first, second] = fake.sets.filter(isBoostMessage);
     // Each try works the length out from the time it's sent, so a later try is never longer.
     const later = second.temperature_setpoint_hold_duration as number;
     expect(later).toBeLessThanOrEqual(first.temperature_setpoint_hold_duration as number);
-    expect(Math.abs(link.holdEnds! - tomorrowAt6pm().getTime())).toBeLessThan(60_000);
+    expect(Math.abs(link.holdEnds! - todayAt6pm().getTime())).toBeLessThan(60_000);
   });
 
   // 10 Oct, 20:04-20:13: the receiver counted down without a word, and zigbee2mqtt's next messages
   // still carried the count from when Away was set.
   it("keeps the end steady while old counts keep arriving", async () => {
-    await settle(link.away(tomorrowAt6pm(), 14));
+    await settle(link.away(todayAt6pm(), 14));
     const ends = link.holdEnds!;
     for (let minute = 0; minute < 10; minute++) {
       await vi.advanceTimersByTimeAsync(60_000);
@@ -333,30 +339,37 @@ describe("away", () => {
       expect(link.holdEnds).toBe(ends);
     }
     // Even a count older than any it's seen can't push the end later.
-    fake.repeatCache({ temperature_setpoint_hold_duration: 2070 });
+    fake.repeatCache({ temperature_setpoint_hold_duration: 630 });
     await vi.advanceTimersByTimeAsync(100);
     expect(link.holdEnds).toBe(ends);
   });
 
   it("shows the chosen end on a panel opened later, after a silent countdown", async () => {
-    await settle(link.away(tomorrowAt6pm(), 14));
+    await settle(link.away(todayAt6pm(), 14));
     await vi.advanceTimersByTimeAsync(8 * 60_000);
     link.stop();
     link = new ReceiverLink(() => fake.hass, TOPIC, () => undefined);
     await link.start();
     await vi.advanceTimersByTimeAsync(2000);
     expect(link.mode).toBe("away");
-    expect(Math.abs(link.holdEnds! - tomorrowAt6pm().getTime())).toBeLessThan(60_000);
+    expect(Math.abs(link.holdEnds! - todayAt6pm().getTime())).toBeLessThan(60_000);
   });
 
   it("corrects the end when coming back to the panel", async () => {
-    await settle(link.away(tomorrowAt6pm(), 14));
+    await settle(link.away(todayAt6pm(), 14));
     const ends = link.holdEnds!;
     await vi.advanceTimersByTimeAsync(30 * 60_000);
     link.requestState();
     await vi.advanceTimersByTimeAsync(2000);
     expect(link.holdEnds).toBeLessThanOrEqual(ends);
-    expect(Math.abs(link.holdEnds! - tomorrowAt6pm().getTime())).toBeLessThan(60_000);
+    expect(Math.abs(link.holdEnds! - todayAt6pm().getTime())).toBeLessThan(60_000);
+  });
+
+  // zigbee2mqtt 2.8 and later refuse a longer hold, and drop longer counts from the receiver's reports.
+  it("refuses more than 24 hours", async () => {
+    await expect(link.away(new Date(2026, 9, 11, 18, 0), 14)).rejects.toThrow(/more than 24 hours.*holiday on the remote/);
+    expect(fake.sets).toHaveLength(0);
+    expect((await settle(link.away(new Date(2026, 9, 11, 7, 30), 14))).ok).toBe(true);
   });
 
   it("refuses a time in the past", async () => {
@@ -375,10 +388,42 @@ describe("other modes", () => {
 
   it("Manual holds with no end, then sets the temperature (the hold resets it)", async () => {
     expect((await settle(link.manual(18))).ok).toBe(true);
-    expect(fake.sets[0]).toEqual({ system_mode: "heat", temperature_setpoint_hold: true, temperature_setpoint_hold_duration: NO_END });
+    // "No end" goes before the hold, as a raw write: zigbee2mqtt 2.8 and later refuse 65535 by name.
+    expect(fake.sets[0]).toEqual({ system_mode: "heat", ...holdLengthWrite(NO_END), temperature_setpoint_hold: true });
+    expect(Object.keys(fake.sets[0])).toEqual(["system_mode", "write", "temperature_setpoint_hold"]);
     expect(fake.sets[1]).toEqual({ occupied_heating_setpoint: 18 });
+    expect(fake.state.temperature_setpoint_hold_duration).toBe(NO_END);
+    // ...which zigbee2mqtt then reports as null.
+    expect(link.report.temperature_setpoint_hold_duration).toBeNull();
     expect(link.mode).toBe("manual");
+    expect(link.holdEnds).toBeNull();
     expect(fake.state.occupied_heating_setpoint).toBe(18);
+  });
+
+  it("Manual from a temporary change goes to Schedule first, or the hold would keep counting down", async () => {
+    // A temperature written over zigbee2mqtt on Schedule: a hold until the next slot (21 Oct 2026).
+    fake.external({ temperature_setpoint_hold: true, temperature_setpoint_hold_duration: 516, occupied_heating_setpoint: 21 });
+    await vi.advanceTimersByTimeAsync(100);
+    expect((await settle(link.manual(18))).ok).toBe(true);
+    expect(fake.sets[0]).toEqual(SCHEDULE);
+    expect(fake.state.temperature_setpoint_hold_duration).toBe(NO_END);
+    expect(link.mode).toBe("manual");
+  });
+
+  it("says so when Manual came with an end time", async () => {
+    // The receiver took the hold but not "no end", as a boost sometimes loses its length.
+    const original = fake.hass.callService;
+    fake.hass.callService = async (domain, service, data) => {
+      const payload = data?.payload as Record<string, unknown> | undefined;
+      if (payload && "write" in payload) {
+        const { write: _, ...rest } = payload;
+        return original(domain, service, { ...data, payload: { ...rest, temperature_setpoint_hold_duration: 30 } });
+      }
+      return original(domain, service, data);
+    };
+    const result = await settle(link.manual(18));
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.message).toMatch(/with an end time/);
   });
 
   it("Off sets mode off, hold off and 1° in one message, as the remote does", async () => {
@@ -413,6 +458,47 @@ describe("other modes", () => {
   it("won't change the temperature while Off", async () => {
     await settle(link.off());
     await expect(link.setTarget(20)).rejects.toThrow(/Choose Schedule/);
+  });
+});
+
+// SLR2, SLR2b, SLR2c: zigbee2mqtt names every property after the heating or hot water endpoint.
+describe("a dual-channel receiver (heating only)", () => {
+  beforeEach(async () => {
+    link.stop();
+    fake = new FakeReceiver(true);
+    link = new ReceiverLink(() => fake.hass, TOPIC, () => undefined);
+    await link.start();
+    await vi.advanceTimersByTimeAsync(1000);
+  });
+
+  it("reads the heating's state and week, not the stale plain names or the hot water", () => {
+    expect(link.dualChannel).toBe(true);
+    expect(link.status).toBe("live");
+    expect(link.scheduleDays).toBe(7);
+    expect(link.mode).toBe("schedule");
+    expect(link.report.occupied_heating_setpoint).toBe(19);
+  });
+
+  it("sends every command to the heating endpoint", async () => {
+    fake.sets = [];
+    expect((await settle(link.boost(15, 22))).ok).toBe(true);
+    expect(fake.sets[0]).toMatchObject({ system_mode_heat: "emergency_heating", temperature_setpoint_hold_duration_heat: 15 });
+    expect(link.mode).toBe("boost");
+    expect((await settle(link.manual(18))).ok).toBe(true);
+    expect(fake.sets).toContainEqual({ system_mode_heat: "heat", write_heat: holdLengthWrite(NO_END).write, temperature_setpoint_hold_heat: true });
+    expect(link.mode).toBe("manual");
+    expect(link.target).toBe(18);
+    expect((await settle(link.off())).ok).toBe(true);
+    expect(link.mode).toBe("off");
+    expect((await settle(link.toSchedule())).ok).toBe(true);
+    expect(link.mode).toBe("schedule");
+  });
+
+  it("saves the heating's schedule", async () => {
+    const week = { monday: [{ time: 7 * 60, setpoint: 20 }] };
+    expect((await settle(link.saveSchedule(week, ["monday"]))).ok).toBe(true);
+    expect(fake.sets.some((p) => "weekly_schedule_heat" in p)).toBe(true);
+    expect(fake.week.monday?.[0]).toEqual({ time: 7 * 60, setpoint: 20 });
   });
 });
 

@@ -13,8 +13,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from .z2m import NO_END, is_no_end
+
 # The same rules as the panel's (src/receiver.ts) and the dashboard card's.
-NO_END = 65535
 AWAY_MAX_TEMP = 16
 AWAY_MIN_MINUTES = 360
 
@@ -61,7 +62,7 @@ def decode_mode(report: dict[str, Any]) -> str:
         if hold is False:
             return "schedule"
         minutes = _number(report.get("temperature_setpoint_hold_duration"))
-        if hold is True and minutes == NO_END:
+        if hold is True and is_no_end(report):
             return "manual"
         # A temperature written while on Schedule holds it until the next slot, counting down (21 Oct 2026).
         if hold is True and minutes is not None:

@@ -12,14 +12,14 @@ from pytest_homeassistant_custom_component.common import (
 )
 from pytest_homeassistant_custom_component.typing import ClientSessionGenerator, MqttMockHAClient
 
-from custom_components.heating_panel.const import DOMAIN
+from custom_components.heating_panel.const import DOMAIN, panel_setpoint_signal
 from homeassistant.components import frontend, mqtt, panel_custom
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import EVENT_STATE_CHANGED, STATE_UNAVAILABLE
 from homeassistant.core import Context, HomeAssistant
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import device_registry as dr, entity_registry as er
-from homeassistant.helpers.dispatcher import async_dispatcher_send
+from homeassistant.helpers.dispatcher import async_dispatcher_connect, async_dispatcher_send
 from homeassistant.util import dt as dt_util
 
 from .conftest import REPORT, TOPIC, published, setup_receiver
@@ -162,6 +162,60 @@ async def test_heating_mode_sensor(hass: HomeAssistant, mqtt_mock: MqttMockHACli
     assert state.state == "schedule"
     assert state.attributes["setpoint"] == 1
     assert state.attributes["heating"] is False
+
+
+async def test_dual_channel_receiver(hass: HomeAssistant, mqtt_mock: MqttMockHAClient) -> None:
+    """An SLR2b: zigbee2mqtt names every property after its endpoint; only the heating's count."""
+    await setup_receiver(hass)
+    report = {
+        "linkquality": 80,
+        # Left over from writes without an endpoint.
+        "system_mode": "off",
+        "occupied_heating_setpoint": 30,
+        "system_mode_heat": "heat",
+        "temperature_setpoint_hold_heat": True,
+        # Manual: "no end", which zigbee2mqtt 2.6.1 and later report as null.
+        "temperature_setpoint_hold_duration_heat": None,
+        "occupied_heating_setpoint_heat": 19.5,
+        "running_state_heat": "heat",
+        "local_temperature_heat": 18.2,
+        "system_mode_water": "emergency_heating",
+        "temperature_setpoint_hold_duration_water": 30,
+    }
+    async_fire_mqtt_message(hass, TOPIC, json.dumps(report))
+    await hass.async_block_till_done()
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=5))
+    await hass.async_block_till_done()
+
+    state = hass.states.get("sensor.heating_mode")
+    assert state.state == "manual"
+    assert state.attributes["setpoint"] == 19.5
+    assert state.attributes["heating"] is True
+    assert state.attributes["local_temperature"] == 18.2
+    # The panel gets the report as it came, and reads it the same way.
+    receiver = hass.states.get("sensor.heating_panel_receiver")
+    assert receiver.state == "heat"
+    assert receiver.attributes["system_mode_water"] == "emergency_heating"
+
+
+@pytest.mark.parametrize("key", ["occupied_heating_setpoint", "occupied_heating_setpoint_heat"])
+async def test_dial_tells_tpi_the_new_target(hass: HomeAssistant, mqtt_mock: MqttMockHAClient, key: str) -> None:
+    """A temperature on its own, to a heating-only receiver or a dual-channel one's heating endpoint."""
+    await setup_receiver(hass)
+    targets = []
+    async_dispatcher_connect(hass, panel_setpoint_signal(TOPIC), targets.append)
+    await hass.services.async_call(
+        DOMAIN, "send", {"topic": TOPIC, "command": "set", "payload": {key: 21}}, blocking=True
+    )
+    await hass.services.async_call(
+        DOMAIN,
+        "send",
+        {"topic": TOPIC, "command": "set", "payload": {key: 22, "system_mode_heat": "heat"}},
+        blocking=True,
+    )
+    assert targets == [21.0]
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=30))
+    await hass.async_block_till_done()
 
 
 async def test_entry_from_before_0_4_keeps_its_yaml_panel(hass: HomeAssistant, mqtt_mock: MqttMockHAClient) -> None:

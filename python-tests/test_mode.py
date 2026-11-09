@@ -12,6 +12,8 @@ class TestDecodeMode:
             ({"system_mode": "off"}, "off"),
             (SCHEDULE, "schedule"),
             ({"system_mode": "heat", "temperature_setpoint_hold": True, "temperature_setpoint_hold_duration": NO_END}, "manual"),
+            # zigbee2mqtt 2.6.1 and later report "no end" as null.
+            ({"system_mode": "heat", "temperature_setpoint_hold": True, "temperature_setpoint_hold_duration": None}, "manual"),
             ({"system_mode": "emergency_heating", "occupied_heating_setpoint": 22, "temperature_setpoint_hold_duration": 30}, "boost"),
             ({"system_mode": "emergency_heating", "occupied_heating_setpoint": 15, "temperature_setpoint_hold_duration": 30}, "away"),
             ({"system_mode": "emergency_heating", "occupied_heating_setpoint": 20, "temperature_setpoint_hold_duration": 2000}, "away"),

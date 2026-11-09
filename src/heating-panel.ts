@@ -405,8 +405,10 @@ export class HeatingPanel extends LitElement {
   }
 
   private openAway(): void {
-    this.awayDay = this.dayFromToday(1);
+    // 18:00 next: today if it's still to come, so it's always within the 24 hours Away can last.
+    const now = new Date();
     this.awayTime = 18 * 60;
+    this.awayDay = this.dayFromToday(now.getHours() * 60 + now.getMinutes() < this.awayTime ? 0 : 1);
     this.awayTemp = this.setting("away_temperature");
     this.awayOpen = true;
   }
@@ -822,11 +824,6 @@ recorder:
     const until = this.awayUntil;
     const minutes = (until.getTime() - Date.now()) / 60_000;
     const valid = minutes >= 1 && minutes <= MAX_HOLD;
-    const toInput = (t: number) => {
-      const d = new Date(t);
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-    };
-    const quick = [1, 2, 3, 4, 5, 6, 7].map((n) => this.dayFromToday(n));
     const shift = (by: number) => (this.awayTime = (this.awayTime + by + 24 * 60) % (24 * 60));
     return html`<div class="sheet-backdrop" @click=${(e: Event) => e.target === e.currentTarget && (this.awayOpen = false)}>
       <div class="sheet" role="dialog" aria-modal="true" aria-label="Away">
@@ -842,29 +839,18 @@ recorder:
               <button class="primary" ?disabled=${busy} @click=${this.endAway}>We're back: end Away now</button>`
           : html`<p class="sheet-text">
                 Keeps the house at a low temperature while you're away, then goes back to the schedule by itself. Set
-                the return a little early to come home to a warm house.
+                the return a little early to come home to a warm house. Up to 24 hours: for longer, set a holiday on the
+                remote (plane icon).
               </p>
-              <p class="sheet-label">Back on</p>
+              <p class="sheet-label">Back</p>
               <div class="chips">
-                ${quick.slice(0, 6).map(
-                  (t, i) => html`<button class="chip" aria-pressed=${String(t === this.awayDay)} @click=${() => (this.awayDay = t)}>
-                    ${i === 0 ? "Tomorrow" : DAY_SHORT[dayIndex(new Date(t))]}
-                  </button>`,
-                )}
+                ${[0, 1].map((n) => {
+                  const t = this.dayFromToday(n);
+                  return html`<button class="chip" aria-pressed=${String(t === this.awayDay)} @click=${() => (this.awayDay = t)}>
+                    ${n === 0 ? "Today" : "Tomorrow"}
+                  </button>`;
+                })}
               </div>
-              <label class="date-pick">
-                <span>Or a date</span>
-                <input
-                  type="date"
-                  .value=${toInput(this.awayDay)}
-                  min=${toInput(this.dayFromToday(0))}
-                  max=${toInput(this.dayFromToday(44))}
-                  @change=${(e: Event) => {
-                    const [y, m, d] = (e.target as HTMLInputElement).value.split("-").map(Number);
-                    if (y) this.awayDay = new Date(y, m - 1, d).getTime();
-                  }}
-                />
-              </label>
               <p class="sheet-label">at</p>
               <div class="stepper time-stepper">
                 <button class="round small" title="An hour earlier" aria-label="An hour earlier" @click=${() => shift(-60)}>−1h</button>
@@ -882,7 +868,7 @@ recorder:
                   @click=${() => (this.awayTemp = Math.min(AWAY_MAX_TEMP, this.awayTemp + 0.5))}>${iconPlus}</button>
               </div>
               <button class="primary" ?disabled=${busy || !valid || link?.status !== "live"} @click=${this.startAway}>
-                ${valid ? `Away until ${this.dateText(until)}` : minutes < 1 ? "Pick a time in the future" : "That's too far ahead (45 days at most)"}
+                ${valid ? `Away until ${this.dateText(until)}` : minutes < 1 ? "Pick a time in the future" : "That's more than 24 hours away"}
               </button>`}
       </div>
     </div>`;
@@ -1661,29 +1647,6 @@ recorder:
       width: 20px;
       height: 20px;
       vertical-align: -4px;
-    }
-    .date-pick {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 10px;
-      color: var(--haze);
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-    .date-pick input {
-      height: 44px;
-      padding: 0 12px;
-      border: 0;
-      border-radius: 12px;
-      background: var(--slate-2);
-      color: var(--mist);
-      font: inherit;
-      color-scheme: dark;
-    }
-    :host([theme="ha"]) .date-pick input {
-      color-scheme: light dark;
     }
     .card {
       display: block;

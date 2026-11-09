@@ -50,6 +50,7 @@ from .mode import decode_mode
 from .publish import async_first_read, async_publish_command
 from .schedule import DAYS, Week, next_slot, parse_day_reply, setpoint_at
 from .tpi import IDLE_FAULT, Settings, Tpi
+from .z2m import from_z2m, is_dual_channel, to_z2m
 
 STORE_VERSION = 1
 # After a slot starts, give the receiver this long to put its setpoint back before TPI writes.
@@ -102,6 +103,8 @@ class TpiController:
 
         self._store: Store[dict[str, Any]] = Store(hass, STORE_VERSION, f"{DOMAIN}.{entry.entry_id}")
         self._report: dict[str, Any] = {}
+        # A dual-channel receiver (heating and hot water), seen from its reports: writes go to its heating endpoint.
+        self._dual = False
         self._writing: asyncio.Task[None] | None = None
         self._readers: list[asyncio.Future[dict[str, Any]]] = []
         self._unsubs: list[Any] = []
@@ -164,6 +167,14 @@ class TpiController:
             return
         if not isinstance(payload, dict):
             return
+        if not self._dual and is_dual_channel(payload):
+            self._dual = True
+            # The first read went without an endpoint, so zigbee2mqtt sent it to the receiver's first one, which may
+            # be the hot water's. Ask the heating for its schedule (the state comes with every message).
+            self.entry.async_create_background_task(
+                self.hass, self._publish("get", {"weekly_schedule": ""}), f"{DOMAIN} heating schedule read"
+            )
+        payload = from_z2m(payload)
         self._report.update(payload)
 
         readers, self._readers = self._readers, []
@@ -319,7 +330,7 @@ class TpiController:
                 self._readers.remove(reader)
 
     async def _publish(self, command: str, payload: dict[str, Any]) -> None:
-        await async_publish_command(self.hass, self.topic, command, payload)
+        await async_publish_command(self.hass, self.topic, command, to_z2m(payload, self._dual))
 
     # ---- What the entities show ----
 

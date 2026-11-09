@@ -20,9 +20,24 @@ export const DAY: Transition[] = [
   { time: 22 * 60, setpoint: 1 },
 ];
 
+/** The longest hold zigbee2mqtt 2.8 and later writes or reports (see src/z2m.ts). */
+const Z2M_MAX_HOLD = 1440;
+const PROPERTIES = [
+  "system_mode",
+  "running_state",
+  "occupied_heating_setpoint",
+  "local_temperature",
+  "temperature_setpoint_hold",
+  "temperature_setpoint_hold_duration",
+  "weekly_schedule",
+];
+
 /**
- * A Hive SLR1c behind zigbee2mqtt, as far as the panel can see it: answers /get, applies /set the way
- * the real receiver does, counts holds down and ends them by itself. Driven by Vitest's fake timers.
+ * A Hive SLR1c behind zigbee2mqtt (2.8 or later), as far as the panel can see it: answers /get, applies /set the
+ * way the real receiver does, counts holds down and ends them by itself. Driven by Vitest's fake timers.
+ *
+ * With `dual`, it's a dual-channel SLR2b instead: every property is named after its endpoint (`_heat`, `_water`),
+ * and the plain names hold stale values, as on the SLR2 report in greeeny101/Hive-Thermostat-Zigbee2MQTT#3.
  */
 export class FakeReceiver {
   state = {
@@ -40,6 +55,10 @@ export class FakeReceiver {
   boostFaults: BoostFault[] = [];
   /** The receiver ignores the setpoint in this many writes (other than boost messages). */
   dropSetpoints = 0;
+  /** What zigbee2mqtt refused, as it logs it. */
+  errors: string[] = [];
+  /** Keys sent without an endpoint to a dual-channel receiver: they wouldn't reach the heating. */
+  stray: string[] = [];
 
   private subscribers = new Map<string, (msg: MqttMessage) => void>();
   private tick?: ReturnType<typeof setTimeout>;
@@ -79,14 +98,16 @@ export class FakeReceiver {
         topic = data?.topic as string;
         payload = JSON.parse(data?.payload as string) as Record<string, unknown>;
       } else throw new Error(`unexpected service ${domain}.${service}`);
-      if (topic === `${TOPIC}/set`) this.onSet(payload);
-      else if (topic === `${TOPIC}/get`) this.onGet(payload);
+      if (topic === `${TOPIC}/set`) {
+        this.sets.push(payload);
+        this.onSet(this.z2m(payload, "set"));
+      } else if (topic === `${TOPIC}/get`) this.onGet(this.z2m(payload, "get"));
       else throw new Error(`unexpected topic ${topic}`);
       return undefined;
     },
   };
 
-  constructor() {
+  constructor(readonly dual = false) {
     this.state.occupied_heating_setpoint = this.scheduled();
   }
 
@@ -104,7 +125,7 @@ export class FakeReceiver {
 
   /** zigbee2mqtt publishes again from its cache (e.g. after another attribute report), old count and all. */
   repeatCache(change: Record<string, unknown> = {}): void {
-    this.cache = { ...this.cache, ...change };
+    this.cache = this.seen(change);
     this.send(this.cache);
   }
 
@@ -118,12 +139,68 @@ export class FakeReceiver {
 
   /** The receiver reports (or zigbee2mqtt echoes a write): everything current. */
   private publish(extra: Record<string, unknown> = {}): void {
-    this.cache = { ...this.state };
+    this.cache = this.seen(this.state);
     this.send({ ...this.cache, ...extra });
   }
 
+  /**
+   * zigbee2mqtt's cache after the receiver reports `values`. "No end" (65535) comes through as null, and a hold
+   * longer than 24 hours is dropped, so the cache keeps the last count it had.
+   */
+  private seen(values: Record<string, unknown>): Record<string, unknown> {
+    const out = { ...this.cache };
+    for (const [k, v] of Object.entries(values)) {
+      if (k === "temperature_setpoint_hold_duration" && typeof v === "number" && v > Z2M_MAX_HOLD) {
+        if (v === 65535) out[k] = null;
+      } else out[k] = v;
+    }
+    return out;
+  }
+
   private send(msg: Record<string, unknown>): void {
+    if (this.dual) {
+      const wire: Record<string, unknown> = {
+        // Left over from writes without an endpoint; nothing like the heating's real state.
+        system_mode: "off",
+        occupied_heating_setpoint: 30,
+        temperature_setpoint_hold: true,
+        system_mode_water: "emergency_heating",
+        temperature_setpoint_hold_water: true,
+        temperature_setpoint_hold_duration_water: null,
+      };
+      for (const [k, v] of Object.entries(msg)) wire[PROPERTIES.includes(k) ? `${k}_heat` : k] = v;
+      msg = wire;
+    }
     this.subscribers.get(TOPIC)?.({ topic: TOPIC, payload: JSON.stringify(msg), qos: 0, retain: false });
+  }
+
+  /**
+   * A /set or /get payload as zigbee2mqtt takes it, key by key in order: the endpoint taken off each name; the
+   * generic `write` of the hold length (attribute 36) turned into the property; a named hold length over 24 hours
+   * refused, as zigbee2mqtt 2.8 and later do.
+   */
+  private z2m(raw: Record<string, unknown>, command: "set" | "get"): Record<string, unknown> {
+    const p: Record<string, unknown> = {};
+    for (const [rawKey, v] of Object.entries(raw)) {
+      let key = rawKey;
+      if (this.dual) {
+        if (key.endsWith("_heat")) key = key.slice(0, -"_heat".length);
+        // A /get without an endpoint goes to the first one, the heating; a /set that way is a mistake here.
+        else if (command === "set") {
+          this.stray.push(key);
+          continue;
+        }
+      }
+      if (key === "write") {
+        const w = v as { cluster: string; payload: Record<string, { value: number; type: number }> };
+        if (w.cluster !== "hvacThermostat" || !w.payload["36"] || w.payload["36"].type !== 0x21)
+          throw new Error(`unexpected write ${JSON.stringify(v)}`);
+        p.temperature_setpoint_hold_duration = w.payload["36"].value;
+      } else if (key === "temperature_setpoint_hold_duration" && command === "set" && (v as number) > Z2M_MAX_HOLD) {
+        this.errors.push(`Publish 'set' '${key}' failed: tempSetpointHoldDuration requires max of ${Z2M_MAX_HOLD}`);
+      } else p[key] = v;
+    }
+    return p;
   }
 
   private later(ms: number, fn: () => void): void {
@@ -149,14 +226,13 @@ export class FakeReceiver {
     // cache, so the first messages of a multi-attribute read still carry old values (10 Oct, 20:13).
     Object.keys(payload).forEach((key, i) =>
       this.later(50 + i * 20, () => {
-        this.cache = { ...this.cache, [key]: (this.state as Record<string, unknown>)[key] };
+        this.cache = this.seen({ [key]: (this.state as Record<string, unknown>)[key] });
         this.send(this.cache);
       }),
     );
   }
 
   private onSet(p: Record<string, unknown>): void {
-    this.sets.push(p);
     const s = this.state;
 
     if (p.weekly_schedule) {
@@ -188,11 +264,17 @@ export class FakeReceiver {
       return;
     }
 
-    if (p.system_mode === "heat" && p.temperature_setpoint_hold === true && p.temperature_setpoint_hold_duration === 65535) {
-      // Manual: a hold with no end; the hold resets the setpoint to the schedule's.
-      this.stopCountdown();
-      Object.assign(s, { system_mode: "heat", temperature_setpoint_hold: true, temperature_setpoint_hold_duration: 65535 });
-      s.occupied_heating_setpoint = this.scheduled();
+    if (p.system_mode === "heat" && p.temperature_setpoint_hold === true) {
+      // A hold switching on takes the length written before it (none: no end) and resets the setpoint to the
+      // schedule's. One that's already on keeps its count.
+      s.system_mode = "heat";
+      if (!s.temperature_setpoint_hold) {
+        this.stopCountdown();
+        s.temperature_setpoint_hold = true;
+        s.temperature_setpoint_hold_duration = (p.temperature_setpoint_hold_duration as number | undefined) ?? 65535;
+        s.occupied_heating_setpoint = this.scheduled();
+        if (s.temperature_setpoint_hold_duration < 65534) this.startCountdown();
+      }
     } else {
       if (typeof p.system_mode === "string") s.system_mode = p.system_mode;
       if (p.temperature_setpoint_hold === false) {

@@ -3,18 +3,18 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const rt = globalThis, kt = rt.ShadowRoot && (rt.ShadyCSS === void 0 || rt.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, _t = Symbol(), Ct = /* @__PURE__ */ new WeakMap();
-let Zt = class {
+const rt = globalThis, St = rt.ShadowRoot && (rt.ShadyCSS === void 0 || rt.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, At = Symbol(), Dt = /* @__PURE__ */ new WeakMap();
+let ie = class {
   constructor(t, e, s) {
-    if (this._$cssResult$ = !0, s !== _t) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
+    if (this._$cssResult$ = !0, s !== At) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
     this.cssText = t, this.t = e;
   }
   get styleSheet() {
     let t = this.o;
     const e = this.t;
-    if (kt && t === void 0) {
+    if (St && t === void 0) {
       const s = e !== void 0 && e.length === 1;
-      s && (t = Ct.get(e)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), s && Ct.set(e, t));
+      s && (t = Dt.get(e)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), s && Dt.set(e, t));
     }
     return t;
   }
@@ -22,95 +22,95 @@ let Zt = class {
     return this.cssText;
   }
 };
-const ce = (a) => new Zt(typeof a == "string" ? a : a + "", void 0, _t), te = (a, ...t) => {
-  const e = a.length === 1 ? a[0] : t.reduce((s, i, n) => s + ((o) => {
-    if (o._$cssResult$ === !0) return o.cssText;
-    if (typeof o == "number") return o;
-    throw Error("Value passed to 'css' function must be a 'css' function result: " + o + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
-  })(i) + a[n + 1], a[0]);
-  return new Zt(e, a, _t);
-}, de = (a, t) => {
-  if (kt) a.adoptedStyleSheets = t.map((e) => e instanceof CSSStyleSheet ? e : e.styleSheet);
+const fe = (o) => new ie(typeof o == "string" ? o : o + "", void 0, At), ne = (o, ...t) => {
+  const e = o.length === 1 ? o[0] : t.reduce((s, i, n) => s + ((a) => {
+    if (a._$cssResult$ === !0) return a.cssText;
+    if (typeof a == "number") return a;
+    throw Error("Value passed to 'css' function must be a 'css' function result: " + a + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
+  })(i) + o[n + 1], o[0]);
+  return new ie(e, o, At);
+}, ge = (o, t) => {
+  if (St) o.adoptedStyleSheets = t.map((e) => e instanceof CSSStyleSheet ? e : e.styleSheet);
   else for (const e of t) {
     const s = document.createElement("style"), i = rt.litNonce;
-    i !== void 0 && s.setAttribute("nonce", i), s.textContent = e.cssText, a.appendChild(s);
+    i !== void 0 && s.setAttribute("nonce", i), s.textContent = e.cssText, o.appendChild(s);
   }
-}, Mt = kt ? (a) => a : (a) => a instanceof CSSStyleSheet ? ((t) => {
+}, Pt = St ? (o) => o : (o) => o instanceof CSSStyleSheet ? ((t) => {
   let e = "";
   for (const s of t.cssRules) e += s.cssText;
-  return ce(e);
-})(a) : a;
+  return fe(e);
+})(o) : o;
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { is: ue, defineProperty: pe, getOwnPropertyDescriptor: me, getOwnPropertyNames: fe, getOwnPropertySymbols: ge, getPrototypeOf: ye } = Object, O = globalThis, Dt = O.trustedTypes, be = Dt ? Dt.emptyScript : "", we = O.reactiveElementPolyfillSupport, Q = (a, t) => a, dt = { toAttribute(a, t) {
+const { is: ye, defineProperty: be, getOwnPropertyDescriptor: we, getOwnPropertyNames: ve, getOwnPropertySymbols: $e, getPrototypeOf: ke } = Object, D = globalThis, Ht = D.trustedTypes, xe = Ht ? Ht.emptyScript : "", _e = D.reactiveElementPolyfillSupport, K = (o, t) => o, dt = { toAttribute(o, t) {
   switch (t) {
     case Boolean:
-      a = a ? be : null;
+      o = o ? xe : null;
       break;
     case Object:
     case Array:
-      a = a == null ? a : JSON.stringify(a);
+      o = o == null ? o : JSON.stringify(o);
   }
-  return a;
-}, fromAttribute(a, t) {
-  let e = a;
+  return o;
+}, fromAttribute(o, t) {
+  let e = o;
   switch (t) {
     case Boolean:
-      e = a !== null;
+      e = o !== null;
       break;
     case Number:
-      e = a === null ? null : Number(a);
+      e = o === null ? null : Number(o);
       break;
     case Object:
     case Array:
       try {
-        e = JSON.parse(a);
+        e = JSON.parse(o);
       } catch {
         e = null;
       }
   }
   return e;
-} }, St = (a, t) => !ue(a, t), Ot = { attribute: !0, type: String, converter: dt, reflect: !1, useDefault: !1, hasChanged: St };
-Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), O.litPropertyMetadata ?? (O.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
-let q = class extends HTMLElement {
+} }, Et = (o, t) => !ye(o, t), Nt = { attribute: !0, type: String, converter: dt, reflect: !1, useDefault: !1, hasChanged: Et };
+Symbol.metadata ?? (Symbol.metadata = Symbol("metadata")), D.litPropertyMetadata ?? (D.litPropertyMetadata = /* @__PURE__ */ new WeakMap());
+let j = class extends HTMLElement {
   static addInitializer(t) {
     this._$Ei(), (this.l ?? (this.l = [])).push(t);
   }
   static get observedAttributes() {
     return this.finalize(), this._$Eh && [...this._$Eh.keys()];
   }
-  static createProperty(t, e = Ot) {
+  static createProperty(t, e = Nt) {
     if (e.state && (e.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(t) && ((e = Object.create(e)).wrapped = !0), this.elementProperties.set(t, e), !e.noAccessor) {
       const s = Symbol(), i = this.getPropertyDescriptor(t, s, e);
-      i !== void 0 && pe(this.prototype, t, i);
+      i !== void 0 && be(this.prototype, t, i);
     }
   }
   static getPropertyDescriptor(t, e, s) {
-    const { get: i, set: n } = me(this.prototype, t) ?? { get() {
+    const { get: i, set: n } = we(this.prototype, t) ?? { get() {
       return this[e];
-    }, set(o) {
-      this[e] = o;
+    }, set(a) {
+      this[e] = a;
     } };
-    return { get: i, set(o) {
+    return { get: i, set(a) {
       const r = i?.call(this);
-      n?.call(this, o), this.requestUpdate(t, r, s);
+      n?.call(this, a), this.requestUpdate(t, r, s);
     }, configurable: !0, enumerable: !0 };
   }
   static getPropertyOptions(t) {
-    return this.elementProperties.get(t) ?? Ot;
+    return this.elementProperties.get(t) ?? Nt;
   }
   static _$Ei() {
-    if (this.hasOwnProperty(Q("elementProperties"))) return;
-    const t = ye(this);
+    if (this.hasOwnProperty(K("elementProperties"))) return;
+    const t = ke(this);
     t.finalize(), t.l !== void 0 && (this.l = [...t.l]), this.elementProperties = new Map(t.elementProperties);
   }
   static finalize() {
-    if (this.hasOwnProperty(Q("finalized"))) return;
-    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(Q("properties"))) {
-      const e = this.properties, s = [...fe(e), ...ge(e)];
+    if (this.hasOwnProperty(K("finalized"))) return;
+    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(K("properties"))) {
+      const e = this.properties, s = [...ve(e), ...$e(e)];
       for (const i of s) this.createProperty(i, e[i]);
     }
     const t = this[Symbol.metadata];
@@ -129,8 +129,8 @@ let q = class extends HTMLElement {
     const e = [];
     if (Array.isArray(t)) {
       const s = new Set(t.flat(1 / 0).reverse());
-      for (const i of s) e.unshift(Mt(i));
-    } else t !== void 0 && e.push(Mt(t));
+      for (const i of s) e.unshift(Pt(i));
+    } else t !== void 0 && e.push(Pt(t));
     return e;
   }
   static _$Eu(t, e) {
@@ -156,7 +156,7 @@ let q = class extends HTMLElement {
   }
   createRenderRoot() {
     const t = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-    return de(t, this.constructor.elementStyles), t;
+    return ge(t, this.constructor.elementStyles), t;
   }
   connectedCallback() {
     this.renderRoot ?? (this.renderRoot = this.createRenderRoot()), this.enableUpdating(!0), this._$EO?.forEach((t) => t.hostConnected?.());
@@ -179,22 +179,22 @@ let q = class extends HTMLElement {
   _$AK(t, e) {
     const s = this.constructor, i = s._$Eh.get(t);
     if (i !== void 0 && this._$Em !== i) {
-      const n = s.getPropertyOptions(i), o = typeof n.converter == "function" ? { fromAttribute: n.converter } : n.converter?.fromAttribute !== void 0 ? n.converter : dt;
+      const n = s.getPropertyOptions(i), a = typeof n.converter == "function" ? { fromAttribute: n.converter } : n.converter?.fromAttribute !== void 0 ? n.converter : dt;
       this._$Em = i;
-      const r = o.fromAttribute(e, n.type);
+      const r = a.fromAttribute(e, n.type);
       this[i] = r ?? this._$Ej?.get(i) ?? r, this._$Em = null;
     }
   }
   requestUpdate(t, e, s, i = !1, n) {
     if (t !== void 0) {
-      const o = this.constructor;
-      if (i === !1 && (n = this[t]), s ?? (s = o.getPropertyOptions(t)), !((s.hasChanged ?? St)(n, e) || s.useDefault && s.reflect && n === this._$Ej?.get(t) && !this.hasAttribute(o._$Eu(t, s)))) return;
+      const a = this.constructor;
+      if (i === !1 && (n = this[t]), s ?? (s = a.getPropertyOptions(t)), !((s.hasChanged ?? Et)(n, e) || s.useDefault && s.reflect && n === this._$Ej?.get(t) && !this.hasAttribute(a._$Eu(t, s)))) return;
       this.C(t, e, s);
     }
     this.isUpdatePending === !1 && (this._$ES = this._$EP());
   }
-  C(t, e, { useDefault: s, reflect: i, wrapped: n }, o) {
-    s && !(this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Map())).has(t) && (this._$Ej.set(t, o ?? e ?? this[t]), n !== !0 || o !== void 0) || (this._$AL.has(t) || (this.hasUpdated || s || (e = void 0), this._$AL.set(t, e)), i === !0 && this._$Em !== t && (this._$Eq ?? (this._$Eq = /* @__PURE__ */ new Set())).add(t));
+  C(t, e, { useDefault: s, reflect: i, wrapped: n }, a) {
+    s && !(this._$Ej ?? (this._$Ej = /* @__PURE__ */ new Map())).has(t) && (this._$Ej.set(t, a ?? e ?? this[t]), n !== !0 || a !== void 0) || (this._$AL.has(t) || (this.hasUpdated || s || (e = void 0), this._$AL.set(t, e)), i === !0 && this._$Em !== t && (this._$Eq ?? (this._$Eq = /* @__PURE__ */ new Set())).add(t));
   }
   async _$EP() {
     this.isUpdatePending = !0;
@@ -218,8 +218,8 @@ let q = class extends HTMLElement {
       }
       const s = this.constructor.elementProperties;
       if (s.size > 0) for (const [i, n] of s) {
-        const { wrapped: o } = n, r = this[i];
-        o !== !0 || this._$AL.has(i) || r === void 0 || this.C(i, void 0, n, r);
+        const { wrapped: a } = n, r = this[i];
+        a !== !0 || this._$AL.has(i) || r === void 0 || this.C(i, void 0, n, r);
       }
     }
     let t = !1;
@@ -256,75 +256,75 @@ let q = class extends HTMLElement {
   firstUpdated(t) {
   }
 };
-q.elementStyles = [], q.shadowRootOptions = { mode: "open" }, q[Q("elementProperties")] = /* @__PURE__ */ new Map(), q[Q("finalized")] = /* @__PURE__ */ new Map(), we?.({ ReactiveElement: q }), (O.reactiveElementVersions ?? (O.reactiveElementVersions = [])).push("2.1.2");
+j.elementStyles = [], j.shadowRootOptions = { mode: "open" }, j[K("elementProperties")] = /* @__PURE__ */ new Map(), j[K("finalized")] = /* @__PURE__ */ new Map(), _e?.({ ReactiveElement: j }), (D.reactiveElementVersions ?? (D.reactiveElementVersions = [])).push("2.1.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const G = globalThis, Pt = (a) => a, ut = G.trustedTypes, zt = ut ? ut.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, ee = "$lit$", D = `lit$${Math.random().toFixed(9).slice(2)}$`, se = "?" + D, ve = `<${se}>`, R = document, et = () => R.createComment(""), st = (a) => a === null || typeof a != "object" && typeof a != "function", Tt = Array.isArray, $e = (a) => Tt(a) || typeof a?.[Symbol.iterator] == "function", gt = `[ 	
-\f\r]`, Y = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Nt = /-->/g, Ht = />/g, P = RegExp(`>|${gt}(?:([^\\s"'>=/]+)(${gt}*=${gt}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), Rt = /'/g, Bt = /"/g, ie = /^(?:script|style|textarea|title)$/i, ne = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), h = ne(1), yt = ne(2), W = Symbol.for("lit-noChange"), c = Symbol.for("lit-nothing"), Ut = /* @__PURE__ */ new WeakMap(), H = R.createTreeWalker(R, 129);
-function ae(a, t) {
-  if (!Tt(a) || !a.hasOwnProperty("raw")) throw Error("invalid template strings array");
-  return zt !== void 0 ? zt.createHTML(t) : t;
+const X = globalThis, zt = (o) => o, ut = X.trustedTypes, Rt = ut ? ut.createPolicy("lit-html", { createHTML: (o) => o }) : void 0, oe = "$lit$", M = `lit$${Math.random().toFixed(9).slice(2)}$`, ae = "?" + M, Te = `<${ae}>`, B = document, Z = () => B.createComment(""), tt = (o) => o === null || typeof o != "object" && typeof o != "function", Ct = Array.isArray, Se = (o) => Ct(o) || typeof o?.[Symbol.iterator] == "function", yt = `[ 	
+\f\r]`, J = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Bt = /-->/g, Ut = />/g, P = RegExp(`>|${yt}(?:([^\\s"'>=/]+)(${yt}*=${yt}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), Lt = /'/g, It = /"/g, re = /^(?:script|style|textarea|title)$/i, le = (o) => (t, ...e) => ({ _$litType$: o, strings: t, values: e }), h = le(1), bt = le(2), W = Symbol.for("lit-noChange"), d = Symbol.for("lit-nothing"), jt = /* @__PURE__ */ new WeakMap(), R = B.createTreeWalker(B, 129);
+function he(o, t) {
+  if (!Ct(o) || !o.hasOwnProperty("raw")) throw Error("invalid template strings array");
+  return Rt !== void 0 ? Rt.createHTML(t) : t;
 }
-const xe = (a, t) => {
-  const e = a.length - 1, s = [];
-  let i, n = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = Y;
+const Ae = (o, t) => {
+  const e = o.length - 1, s = [];
+  let i, n = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", a = J;
   for (let r = 0; r < e; r++) {
-    const l = a[r];
-    let d, m, u = -1, f = 0;
-    for (; f < l.length && (o.lastIndex = f, m = o.exec(l), m !== null); ) f = o.lastIndex, o === Y ? m[1] === "!--" ? o = Nt : m[1] !== void 0 ? o = Ht : m[2] !== void 0 ? (ie.test(m[2]) && (i = RegExp("</" + m[2], "g")), o = P) : m[3] !== void 0 && (o = P) : o === P ? m[0] === ">" ? (o = i ?? Y, u = -1) : m[1] === void 0 ? u = -2 : (u = o.lastIndex - m[2].length, d = m[1], o = m[3] === void 0 ? P : m[3] === '"' ? Bt : Rt) : o === Bt || o === Rt ? o = P : o === Nt || o === Ht ? o = Y : (o = P, i = void 0);
-    const T = o === P && a[r + 1].startsWith("/>") ? " " : "";
-    n += o === Y ? l + ve : u >= 0 ? (s.push(d), l.slice(0, u) + ee + l.slice(u) + D + T) : l + D + (u === -2 ? r : T);
+    const l = o[r];
+    let c, m, u = -1, v = 0;
+    for (; v < l.length && (a.lastIndex = v, m = a.exec(l), m !== null); ) v = a.lastIndex, a === J ? m[1] === "!--" ? a = Bt : m[1] !== void 0 ? a = Ut : m[2] !== void 0 ? (re.test(m[2]) && (i = RegExp("</" + m[2], "g")), a = P) : m[3] !== void 0 && (a = P) : a === P ? m[0] === ">" ? (a = i ?? J, u = -1) : m[1] === void 0 ? u = -2 : (u = a.lastIndex - m[2].length, c = m[1], a = m[3] === void 0 ? P : m[3] === '"' ? It : Lt) : a === It || a === Lt ? a = P : a === Bt || a === Ut ? a = J : (a = P, i = void 0);
+    const E = a === P && o[r + 1].startsWith("/>") ? " " : "";
+    n += a === J ? l + Te : u >= 0 ? (s.push(c), l.slice(0, u) + oe + l.slice(u) + M + E) : l + M + (u === -2 ? r : E);
   }
-  return [ae(a, n + (a[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), s];
+  return [he(o, n + (o[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), s];
 };
-class it {
+class et {
   constructor({ strings: t, _$litType$: e }, s) {
     let i;
     this.parts = [];
-    let n = 0, o = 0;
-    const r = t.length - 1, l = this.parts, [d, m] = xe(t, e);
-    if (this.el = it.createElement(d, s), H.currentNode = this.el.content, e === 2 || e === 3) {
+    let n = 0, a = 0;
+    const r = t.length - 1, l = this.parts, [c, m] = Ae(t, e);
+    if (this.el = et.createElement(c, s), R.currentNode = this.el.content, e === 2 || e === 3) {
       const u = this.el.content.firstChild;
       u.replaceWith(...u.childNodes);
     }
-    for (; (i = H.nextNode()) !== null && l.length < r; ) {
+    for (; (i = R.nextNode()) !== null && l.length < r; ) {
       if (i.nodeType === 1) {
-        if (i.hasAttributes()) for (const u of i.getAttributeNames()) if (u.endsWith(ee)) {
-          const f = m[o++], T = i.getAttribute(u).split(D), B = /([.?@])?(.*)/.exec(f);
-          l.push({ type: 1, index: n, name: B[2], strings: T, ctor: B[1] === "." ? _e : B[1] === "?" ? Se : B[1] === "@" ? Te : ft }), i.removeAttribute(u);
-        } else u.startsWith(D) && (l.push({ type: 6, index: n }), i.removeAttribute(u));
-        if (ie.test(i.tagName)) {
-          const u = i.textContent.split(D), f = u.length - 1;
-          if (f > 0) {
+        if (i.hasAttributes()) for (const u of i.getAttributeNames()) if (u.endsWith(oe)) {
+          const v = m[a++], E = i.getAttribute(u).split(M), nt = /([.?@])?(.*)/.exec(v);
+          l.push({ type: 1, index: n, name: nt[2], strings: E, ctor: nt[1] === "." ? Ce : nt[1] === "?" ? Me : nt[1] === "@" ? Oe : gt }), i.removeAttribute(u);
+        } else u.startsWith(M) && (l.push({ type: 6, index: n }), i.removeAttribute(u));
+        if (re.test(i.tagName)) {
+          const u = i.textContent.split(M), v = u.length - 1;
+          if (v > 0) {
             i.textContent = ut ? ut.emptyScript : "";
-            for (let T = 0; T < f; T++) i.append(u[T], et()), H.nextNode(), l.push({ type: 2, index: ++n });
-            i.append(u[f], et());
+            for (let E = 0; E < v; E++) i.append(u[E], Z()), R.nextNode(), l.push({ type: 2, index: ++n });
+            i.append(u[v], Z());
           }
         }
-      } else if (i.nodeType === 8) if (i.data === se) l.push({ type: 2, index: n });
+      } else if (i.nodeType === 8) if (i.data === ae) l.push({ type: 2, index: n });
       else {
         let u = -1;
-        for (; (u = i.data.indexOf(D, u + 1)) !== -1; ) l.push({ type: 7, index: n }), u += D.length - 1;
+        for (; (u = i.data.indexOf(M, u + 1)) !== -1; ) l.push({ type: 7, index: n }), u += M.length - 1;
       }
       n++;
     }
   }
   static createElement(t, e) {
-    const s = R.createElement("template");
+    const s = B.createElement("template");
     return s.innerHTML = t, s;
   }
 }
-function V(a, t, e = a, s) {
+function V(o, t, e = o, s) {
   if (t === W) return t;
   let i = s !== void 0 ? e._$Co?.[s] : e._$Cl;
-  const n = st(t) ? void 0 : t._$litDirective$;
-  return i?.constructor !== n && (i?._$AO?.(!1), n === void 0 ? i = void 0 : (i = new n(a), i._$AT(a, e, s)), s !== void 0 ? (e._$Co ?? (e._$Co = []))[s] = i : e._$Cl = i), i !== void 0 && (t = V(a, i._$AS(a, t.values), i, s)), t;
+  const n = tt(t) ? void 0 : t._$litDirective$;
+  return i?.constructor !== n && (i?._$AO?.(!1), n === void 0 ? i = void 0 : (i = new n(o), i._$AT(o, e, s)), s !== void 0 ? (e._$Co ?? (e._$Co = []))[s] = i : e._$Cl = i), i !== void 0 && (t = V(o, i._$AS(o, t.values), i, s)), t;
 }
-let ke = class {
+let Ee = class {
   constructor(t, e) {
     this._$AV = [], this._$AN = void 0, this._$AD = t, this._$AM = e;
   }
@@ -335,29 +335,29 @@ let ke = class {
     return this._$AM._$AU;
   }
   u(t) {
-    const { el: { content: e }, parts: s } = this._$AD, i = (t?.creationScope ?? R).importNode(e, !0);
-    H.currentNode = i;
-    let n = H.nextNode(), o = 0, r = 0, l = s[0];
+    const { el: { content: e }, parts: s } = this._$AD, i = (t?.creationScope ?? B).importNode(e, !0);
+    R.currentNode = i;
+    let n = R.nextNode(), a = 0, r = 0, l = s[0];
     for (; l !== void 0; ) {
-      if (o === l.index) {
-        let d;
-        l.type === 2 ? d = new nt(n, n.nextSibling, this, t) : l.type === 1 ? d = new l.ctor(n, l.name, l.strings, this, t) : l.type === 6 && (d = new Ae(n, this, t)), this._$AV.push(d), l = s[++r];
+      if (a === l.index) {
+        let c;
+        l.type === 2 ? c = new st(n, n.nextSibling, this, t) : l.type === 1 ? c = new l.ctor(n, l.name, l.strings, this, t) : l.type === 6 && (c = new De(n, this, t)), this._$AV.push(c), l = s[++r];
       }
-      o !== l?.index && (n = H.nextNode(), o++);
+      a !== l?.index && (n = R.nextNode(), a++);
     }
-    return H.currentNode = R, i;
+    return R.currentNode = B, i;
   }
   p(t) {
     let e = 0;
     for (const s of this._$AV) s !== void 0 && (s.strings !== void 0 ? (s._$AI(t, s, e), e += s.strings.length - 2) : s._$AI(t[e])), e++;
   }
 };
-class nt {
+class st {
   get _$AU() {
     return this._$AM?._$AU ?? this._$Cv;
   }
   constructor(t, e, s, i) {
-    this.type = 2, this._$AH = c, this._$AN = void 0, this._$AA = t, this._$AB = e, this._$AM = s, this.options = i, this._$Cv = i?.isConnected ?? !0;
+    this.type = 2, this._$AH = d, this._$AN = void 0, this._$AA = t, this._$AB = e, this._$AM = s, this.options = i, this._$Cv = i?.isConnected ?? !0;
   }
   get parentNode() {
     let t = this._$AA.parentNode;
@@ -371,7 +371,7 @@ class nt {
     return this._$AB;
   }
   _$AI(t, e = this) {
-    t = V(this, t, e), st(t) ? t === c || t == null || t === "" ? (this._$AH !== c && this._$AR(), this._$AH = c) : t !== this._$AH && t !== W && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : $e(t) ? this.k(t) : this._(t);
+    t = V(this, t, e), tt(t) ? t === d || t == null || t === "" ? (this._$AH !== d && this._$AR(), this._$AH = d) : t !== this._$AH && t !== W && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Se(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -380,38 +380,38 @@ class nt {
     this._$AH !== t && (this._$AR(), this._$AH = this.O(t));
   }
   _(t) {
-    this._$AH !== c && st(this._$AH) ? this._$AA.nextSibling.data = t : this.T(R.createTextNode(t)), this._$AH = t;
+    this._$AH !== d && tt(this._$AH) ? this._$AA.nextSibling.data = t : this.T(B.createTextNode(t)), this._$AH = t;
   }
   $(t) {
-    const { values: e, _$litType$: s } = t, i = typeof s == "number" ? this._$AC(t) : (s.el === void 0 && (s.el = it.createElement(ae(s.h, s.h[0]), this.options)), s);
+    const { values: e, _$litType$: s } = t, i = typeof s == "number" ? this._$AC(t) : (s.el === void 0 && (s.el = et.createElement(he(s.h, s.h[0]), this.options)), s);
     if (this._$AH?._$AD === i) this._$AH.p(e);
     else {
-      const n = new ke(i, this), o = n.u(this.options);
-      n.p(e), this.T(o), this._$AH = n;
+      const n = new Ee(i, this), a = n.u(this.options);
+      n.p(e), this.T(a), this._$AH = n;
     }
   }
   _$AC(t) {
-    let e = Ut.get(t.strings);
-    return e === void 0 && Ut.set(t.strings, e = new it(t)), e;
+    let e = jt.get(t.strings);
+    return e === void 0 && jt.set(t.strings, e = new et(t)), e;
   }
   k(t) {
-    Tt(this._$AH) || (this._$AH = [], this._$AR());
+    Ct(this._$AH) || (this._$AH = [], this._$AR());
     const e = this._$AH;
     let s, i = 0;
-    for (const n of t) i === e.length ? e.push(s = new nt(this.O(et()), this.O(et()), this, this.options)) : s = e[i], s._$AI(n), i++;
+    for (const n of t) i === e.length ? e.push(s = new st(this.O(Z()), this.O(Z()), this, this.options)) : s = e[i], s._$AI(n), i++;
     i < e.length && (this._$AR(s && s._$AB.nextSibling, i), e.length = i);
   }
   _$AR(t = this._$AA.nextSibling, e) {
     for (this._$AP?.(!1, !0, e); t !== this._$AB; ) {
-      const s = Pt(t).nextSibling;
-      Pt(t).remove(), t = s;
+      const s = zt(t).nextSibling;
+      zt(t).remove(), t = s;
     }
   }
   setConnected(t) {
     this._$AM === void 0 && (this._$Cv = t, this._$AP?.(t));
   }
 }
-class ft {
+class gt {
   get tagName() {
     return this.element.tagName;
   }
@@ -419,53 +419,53 @@ class ft {
     return this._$AM._$AU;
   }
   constructor(t, e, s, i, n) {
-    this.type = 1, this._$AH = c, this._$AN = void 0, this.element = t, this.name = e, this._$AM = i, this.options = n, s.length > 2 || s[0] !== "" || s[1] !== "" ? (this._$AH = Array(s.length - 1).fill(new String()), this.strings = s) : this._$AH = c;
+    this.type = 1, this._$AH = d, this._$AN = void 0, this.element = t, this.name = e, this._$AM = i, this.options = n, s.length > 2 || s[0] !== "" || s[1] !== "" ? (this._$AH = Array(s.length - 1).fill(new String()), this.strings = s) : this._$AH = d;
   }
   _$AI(t, e = this, s, i) {
     const n = this.strings;
-    let o = !1;
-    if (n === void 0) t = V(this, t, e, 0), o = !st(t) || t !== this._$AH && t !== W, o && (this._$AH = t);
+    let a = !1;
+    if (n === void 0) t = V(this, t, e, 0), a = !tt(t) || t !== this._$AH && t !== W, a && (this._$AH = t);
     else {
       const r = t;
-      let l, d;
-      for (t = n[0], l = 0; l < n.length - 1; l++) d = V(this, r[s + l], e, l), d === W && (d = this._$AH[l]), o || (o = !st(d) || d !== this._$AH[l]), d === c ? t = c : t !== c && (t += (d ?? "") + n[l + 1]), this._$AH[l] = d;
+      let l, c;
+      for (t = n[0], l = 0; l < n.length - 1; l++) c = V(this, r[s + l], e, l), c === W && (c = this._$AH[l]), a || (a = !tt(c) || c !== this._$AH[l]), c === d ? t = d : t !== d && (t += (c ?? "") + n[l + 1]), this._$AH[l] = c;
     }
-    o && !i && this.j(t);
+    a && !i && this.j(t);
   }
   j(t) {
-    t === c ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
+    t === d ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
   }
 }
-class _e extends ft {
+class Ce extends gt {
   constructor() {
     super(...arguments), this.type = 3;
   }
   j(t) {
-    this.element[this.name] = t === c ? void 0 : t;
+    this.element[this.name] = t === d ? void 0 : t;
   }
 }
-class Se extends ft {
+class Me extends gt {
   constructor() {
     super(...arguments), this.type = 4;
   }
   j(t) {
-    this.element.toggleAttribute(this.name, !!t && t !== c);
+    this.element.toggleAttribute(this.name, !!t && t !== d);
   }
 }
-class Te extends ft {
+class Oe extends gt {
   constructor(t, e, s, i, n) {
     super(t, e, s, i, n), this.type = 5;
   }
   _$AI(t, e = this) {
-    if ((t = V(this, t, e, 0) ?? c) === W) return;
-    const s = this._$AH, i = t === c && s !== c || t.capture !== s.capture || t.once !== s.once || t.passive !== s.passive, n = t !== c && (s === c || i);
+    if ((t = V(this, t, e, 0) ?? d) === W) return;
+    const s = this._$AH, i = t === d && s !== d || t.capture !== s.capture || t.once !== s.once || t.passive !== s.passive, n = t !== d && (s === d || i);
     i && this.element.removeEventListener(this.name, this, s), n && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
   handleEvent(t) {
     typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, t) : this._$AH.handleEvent(t);
   }
 }
-class Ae {
+class De {
   constructor(t, e, s) {
     this.element = t, this.type = 6, this._$AN = void 0, this._$AM = e, this.options = s;
   }
@@ -476,24 +476,24 @@ class Ae {
     V(this, t);
   }
 }
-const Ee = G.litHtmlPolyfillSupport;
-Ee?.(it, nt), (G.litHtmlVersions ?? (G.litHtmlVersions = [])).push("3.3.3");
-const Ce = (a, t, e) => {
+const Pe = X.litHtmlPolyfillSupport;
+Pe?.(et, st), (X.litHtmlVersions ?? (X.litHtmlVersions = [])).push("3.3.3");
+const He = (o, t, e) => {
   const s = e?.renderBefore ?? t;
   let i = s._$litPart$;
   if (i === void 0) {
     const n = e?.renderBefore ?? null;
-    s._$litPart$ = i = new nt(t.insertBefore(et(), n), n, void 0, e ?? {});
+    s._$litPart$ = i = new st(t.insertBefore(Z(), n), n, void 0, e ?? {});
   }
-  return i._$AI(a), i;
+  return i._$AI(o), i;
 };
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const Z = globalThis;
-class F extends q {
+const G = globalThis;
+class F extends j {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
   }
@@ -504,7 +504,7 @@ class F extends q {
   }
   update(t) {
     const e = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = Ce(e, this.renderRoot, this.renderOptions);
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = He(e, this.renderRoot, this.renderOptions);
   }
   connectedCallback() {
     super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -516,75 +516,75 @@ class F extends q {
     return W;
   }
 }
-F._$litElement$ = !0, F.finalized = !0, Z.litElementHydrateSupport?.({ LitElement: F });
-const Me = Z.litElementPolyfillSupport;
-Me?.({ LitElement: F });
-(Z.litElementVersions ?? (Z.litElementVersions = [])).push("4.2.2");
+F._$litElement$ = !0, F.finalized = !0, G.litElementHydrateSupport?.({ LitElement: F });
+const Ne = G.litElementPolyfillSupport;
+Ne?.({ LitElement: F });
+(G.litElementVersions ?? (G.litElementVersions = [])).push("4.2.2");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const De = { attribute: !0, type: String, converter: dt, reflect: !1, hasChanged: St }, Oe = (a = De, t, e) => {
+const ze = { attribute: !0, type: String, converter: dt, reflect: !1, hasChanged: Et }, Re = (o = ze, t, e) => {
   const { kind: s, metadata: i } = e;
   let n = globalThis.litPropertyMetadata.get(i);
-  if (n === void 0 && globalThis.litPropertyMetadata.set(i, n = /* @__PURE__ */ new Map()), s === "setter" && ((a = Object.create(a)).wrapped = !0), n.set(e.name, a), s === "accessor") {
-    const { name: o } = e;
+  if (n === void 0 && globalThis.litPropertyMetadata.set(i, n = /* @__PURE__ */ new Map()), s === "setter" && ((o = Object.create(o)).wrapped = !0), n.set(e.name, o), s === "accessor") {
+    const { name: a } = e;
     return { set(r) {
       const l = t.get.call(this);
-      t.set.call(this, r), this.requestUpdate(o, l, a, !0, r);
+      t.set.call(this, r), this.requestUpdate(a, l, o, !0, r);
     }, init(r) {
-      return r !== void 0 && this.C(o, void 0, a, r), r;
+      return r !== void 0 && this.C(a, void 0, o, r), r;
     } };
   }
   if (s === "setter") {
-    const { name: o } = e;
+    const { name: a } = e;
     return function(r) {
-      const l = this[o];
-      t.call(this, r), this.requestUpdate(o, l, a, !0, r);
+      const l = this[a];
+      t.call(this, r), this.requestUpdate(a, l, o, !0, r);
     };
   }
   throw Error("Unsupported decorator location: " + s);
 };
-function $(a) {
-  return (t, e) => typeof e == "object" ? Oe(a, t, e) : ((s, i, n) => {
-    const o = i.hasOwnProperty(n);
-    return i.constructor.createProperty(n, s), o ? Object.getOwnPropertyDescriptor(i, n) : void 0;
-  })(a, t, e);
+function k(o) {
+  return (t, e) => typeof e == "object" ? Re(o, t, e) : ((s, i, n) => {
+    const a = i.hasOwnProperty(n);
+    return i.constructor.createProperty(n, s), a ? Object.getOwnPropertyDescriptor(i, n) : void 0;
+  })(o, t, e);
 }
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-function b(a) {
-  return $({ ...a, state: !0, attribute: !1 });
+function y(o) {
+  return k({ ...o, state: !0, attribute: !1 });
 }
-var Pe = Object.defineProperty, _ = (a, t, e, s) => {
-  for (var i = void 0, n = a.length - 1, o; n >= 0; n--)
-    (o = a[n]) && (i = o(t, e, i) || i);
-  return i && Pe(t, e, i), i;
+var Be = Object.defineProperty, _ = (o, t, e, s) => {
+  for (var i = void 0, n = o.length - 1, a; n >= 0; n--)
+    (a = o[n]) && (i = a(t, e, i) || i);
+  return i && Be(t, e, i), i;
 };
-const z = 135, M = 270, j = 120, pt = 100, lt = (a, t = 0, e = 1) => Math.min(e, Math.max(t, a)), mt = (a, t = pt) => {
-  const e = a * Math.PI / 180;
-  return { x: j + t * Math.cos(e), y: j + t * Math.sin(e) };
-}, Lt = (a, t) => {
-  const e = mt(a), s = mt(t), i = t - a > 180 ? 1 : 0;
+const H = 135, C = 270, q = 120, pt = 100, lt = (o, t = 0, e = 1) => Math.min(e, Math.max(t, o)), mt = (o, t = pt) => {
+  const e = o * Math.PI / 180;
+  return { x: q + t * Math.cos(e), y: q + t * Math.sin(e) };
+}, qt = (o, t) => {
+  const e = mt(o), s = mt(t), i = t - o > 180 ? 1 : 0;
   return `M ${e.x.toFixed(2)} ${e.y.toFixed(2)} A ${pt} ${pt} 0 ${i} 1 ${s.x.toFixed(2)} ${s.y.toFixed(2)}`;
-}, w = (a) => `${Number.isInteger(a) ? a.toFixed(0) : a.toFixed(1)}°`, ze = (a) => Math.round(lt((a - 15) / 4) * 100);
-function $t(a) {
-  const t = ze(a);
+}, w = (o) => `${Number.isInteger(o) ? o.toFixed(0) : o.toFixed(1)}°`, Ue = (o) => Math.round(lt((o - 15) / 4) * 100);
+function kt(o) {
+  const t = Ue(o);
   return t <= 50 ? `color-mix(in oklab, var(--mild) ${t * 2}%, var(--cool))` : `color-mix(in oklab, var(--warm) ${(t - 50) * 2}%, var(--mild))`;
 }
-const Ne = h`<svg viewBox="0 0 24 24" aria-hidden="true">
+const Le = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
-</svg>`, He = h`<svg viewBox="0 0 24 24" aria-hidden="true">
+</svg>`, Ie = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M6 12h12M12 6v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
-</svg>`, At = class At extends F {
+</svg>`, Mt = class Mt extends F {
   constructor() {
     super(...arguments), this.min = 5, this.max = 32, this.step = 0.5, this.target = null, this.current = null, this.off = !1, this.active = !1, this.readonly = !1, this.label = "", this.note = "", this.attention = !1, this.pending = null, this.dragging = !1, this.onPointerDown = (t) => {
       if (!this.interactive) return;
-      const e = t.currentTarget.getBoundingClientRect(), s = (t.clientX - e.left) / e.width * 240 - j, i = (t.clientY - e.top) / e.height * 240 - j;
+      const e = t.currentTarget.getBoundingClientRect(), s = (t.clientX - e.left) / e.width * 240 - q, i = (t.clientY - e.top) / e.height * 240 - q;
       if (Math.abs(Math.hypot(s, i) - pt) > 28) return;
       t.currentTarget.setPointerCapture(t.pointerId), this.dragging = !0;
       const n = this.valueAt(t);
@@ -630,14 +630,14 @@ const Ne = h`<svg viewBox="0 0 24 24" aria-hidden="true">
     this.interactive && this.choose((this.pending ?? this.target ?? this.min) + t * this.step);
   }
   valueAt(t) {
-    const e = t.currentTarget.getBoundingClientRect(), s = (t.clientX - e.left) / e.width * 240 - j, i = (t.clientY - e.top) / e.height * 240 - j;
-    let n = (Math.atan2(i, s) * 180 / Math.PI - z + 720) % 360;
-    return n > M && (n = n < M + (360 - M) / 2 ? M : 0), this.min + n / M * (this.max - this.min);
+    const e = t.currentTarget.getBoundingClientRect(), s = (t.clientX - e.left) / e.width * 240 - q, i = (t.clientY - e.top) / e.height * 240 - q;
+    let n = (Math.atan2(i, s) * 180 / Math.PI - H + 720) % 360;
+    return n > C && (n = n < C + (360 - C) / 2 ? C : 0), this.min + n / C * (this.max - this.min);
   }
   render() {
-    const t = this.pending ?? this.target, e = t === null || this.off ? null : lt((t - this.min) / (this.max - this.min)), s = e === null ? null : z + M * e, i = s === null ? null : mt(s), n = this.current === null ? null : mt(z + M * lt((this.current - this.min) / (this.max - this.min))), o = this.active ? "var(--porch)" : $t(t ?? this.min);
+    const t = this.pending ?? this.target, e = t === null || this.off ? null : lt((t - this.min) / (this.max - this.min)), s = e === null ? null : H + C * e, i = s === null ? null : mt(s), n = this.current === null ? null : mt(H + C * lt((this.current - this.min) / (this.max - this.min))), a = this.active ? "var(--porch)" : kt(t ?? this.min);
     return h`
-      <div class="dial ${this.active ? "active" : ""}" style=${`--tone: ${o}`}>
+      <div class="dial ${this.active ? "active" : ""}" style=${`--tone: ${a}`}>
         <svg
           viewBox="0 0 240 240"
           class=${this.interactive ? "interactive" : ""}
@@ -646,10 +646,10 @@ const Ne = h`<svg viewBox="0 0 24 24" aria-hidden="true">
           @pointerup=${this.onPointerUp}
           @pointercancel=${this.onPointerUp}
         >
-          <path class="track" d=${Lt(z, z + M)} />
-          ${s !== null && s - z > 0.5 ? yt`<path class="level" d=${Lt(z, s)} />` : c}
-          ${n ? yt`<circle class="room" cx=${n.x} cy=${n.y} r="4" />` : c}
-          ${i ? yt`<circle
+          <path class="track" d=${qt(H, H + C)} />
+          ${s !== null && s - H > 0.5 ? bt`<path class="level" d=${qt(H, s)} />` : d}
+          ${n ? bt`<circle class="room" cx=${n.x} cy=${n.y} r="4" />` : d}
+          ${i ? bt`<circle
                 class="thumb"
                 cx=${i.x}
                 cy=${i.y}
@@ -659,10 +659,10 @@ const Ne = h`<svg viewBox="0 0 24 24" aria-hidden="true">
                 aria-label="Target temperature"
                 aria-valuemin=${this.min}
                 aria-valuemax=${this.max}
-                aria-valuenow=${t ?? c}
+                aria-valuenow=${t ?? d}
                 aria-readonly=${this.interactive ? "false" : "true"}
                 @keydown=${this.onKey}
-              />` : c}
+              />` : d}
         </svg>
         <div class="center" aria-live="polite">
           <div class="label">${this.label}</div>
@@ -677,7 +677,7 @@ const Ne = h`<svg viewBox="0 0 24 24" aria-hidden="true">
           aria-label="Lower the temperature"
           @click=${() => this.nudge(-1)}
         >
-          ${Ne}
+          ${Le}
         </button>
         <button
           class="step plus"
@@ -686,13 +686,13 @@ const Ne = h`<svg viewBox="0 0 24 24" aria-hidden="true">
           aria-label="Raise the temperature"
           @click=${() => this.nudge(1)}
         >
-          ${He}
+          ${Ie}
         </button>
       </div>
     `;
   }
 };
-At.styles = te`
+Mt.styles = ne`
     :host {
       display: block;
     }
@@ -821,119 +821,150 @@ At.styles = te`
       }
     }
   `;
-let v = At;
+let $ = Mt;
 _([
-  $({ type: Number })
-], v.prototype, "min");
+  k({ type: Number })
+], $.prototype, "min");
 _([
-  $({ type: Number })
-], v.prototype, "max");
+  k({ type: Number })
+], $.prototype, "max");
 _([
-  $({ type: Number })
-], v.prototype, "step");
+  k({ type: Number })
+], $.prototype, "step");
 _([
-  $({ attribute: !1 })
-], v.prototype, "target");
+  k({ attribute: !1 })
+], $.prototype, "target");
 _([
-  $({ attribute: !1 })
-], v.prototype, "current");
+  k({ attribute: !1 })
+], $.prototype, "current");
 _([
-  $({ type: Boolean })
-], v.prototype, "off");
+  k({ type: Boolean })
+], $.prototype, "off");
 _([
-  $({ type: Boolean })
-], v.prototype, "active");
+  k({ type: Boolean })
+], $.prototype, "active");
 _([
-  $({ type: Boolean })
-], v.prototype, "readonly");
+  k({ type: Boolean })
+], $.prototype, "readonly");
 _([
-  $()
-], v.prototype, "label");
+  k()
+], $.prototype, "label");
 _([
-  $()
-], v.prototype, "note");
+  k()
+], $.prototype, "note");
 _([
-  $({ type: Boolean })
-], v.prototype, "attention");
+  k({ type: Boolean })
+], $.prototype, "attention");
 _([
-  b()
-], v.prototype, "pending");
-customElements.get("heating-dial") || customElements.define("heating-dial", v);
-const p = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"], E = (a) => a <= 1, C = (a) => (a.getDay() + 6) % 7, at = (a) => [...a].sort((t, e) => t.time - e.time);
-function S(a) {
+  y()
+], $.prototype, "pending");
+customElements.get("heating-dial") || customElements.define("heating-dial", $);
+const p = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"], A = (o) => o <= 1, O = (o) => (o.getDay() + 6) % 7, it = (o) => [...o].sort((t, e) => t.time - e.time);
+function T(o) {
   const t = [];
-  for (const e of at(a))
+  for (const e of it(o))
     (!t.length || t[t.length - 1].setpoint !== e.setpoint) && t.push(e);
   return t;
 }
-function oe(a, t) {
-  const e = a[p[(t + 6) % 7]];
+function ce(o, t) {
+  const e = o[p[(t + 6) % 7]];
   if (!e?.length) return null;
-  const s = at(e);
+  const s = it(e);
   return s[s.length - 1].setpoint;
 }
-function Re(a, t) {
-  const e = a[p[t]];
+function je(o, t) {
+  const e = o[p[t]];
   if (!e) return [];
   const s = [];
-  let i = 0, n = oe(a, t);
-  for (const o of S(e))
-    o.time > i && s.push({ start: i, end: o.time, setpoint: n }), i = o.time, n = o.setpoint;
-  return s.push({ start: i, end: 24 * 60, setpoint: n }), s.reduce((o, r) => {
-    const l = o[o.length - 1];
-    return l && l.setpoint === r.setpoint ? l.end = r.end : o.push({ ...r }), o;
+  let i = 0, n = ce(o, t);
+  for (const a of T(e))
+    a.time > i && s.push({ start: i, end: a.time, setpoint: n }), i = a.time, n = a.setpoint;
+  return s.push({ start: i, end: 24 * 60, setpoint: n }), s.reduce((a, r) => {
+    const l = a[a.length - 1];
+    return l && l.setpoint === r.setpoint ? l.end = r.end : a.push({ ...r }), a;
   }, []);
 }
-function re(a, t, e) {
-  const s = a[p[t]];
+function de(o, t, e) {
+  const s = o[p[t]];
   if (!s) return null;
-  let i = oe(a, t);
-  for (const n of at(s)) {
+  let i = ce(o, t);
+  for (const n of it(s)) {
     if (n.time > e) break;
     i = n.setpoint;
   }
   return i;
 }
-function Be(a, t) {
-  const e = C(t), s = t.getHours() * 60 + t.getMinutes(), i = re(a, e, s);
+function qe(o, t) {
+  const e = O(t), s = t.getHours() * 60 + t.getMinutes(), i = de(o, e, s);
   if (i === null) return null;
   for (let n = 0; n < 7; n++) {
-    const o = a[p[(e + n) % 7]];
-    if (!o) return null;
-    for (const r of at(o))
+    const a = o[p[(e + n) % 7]];
+    if (!a) return null;
+    for (const r of it(a))
       if (!(n === 0 && r.time <= s) && r.setpoint !== i)
         return { dayOffset: n, time: r.time, setpoint: r.setpoint };
   }
   return null;
 }
-const tt = 6;
-function le(a) {
-  const t = S(a);
-  for (let e = t.length - 1; e >= 0 && t.length < tt; e--) {
+const Q = 6;
+function ue(o) {
+  const t = T(o);
+  for (let e = t.length - 1; e >= 0 && t.length < Q; e--) {
     const s = t[e].time + 15, i = t[e + 1]?.time ?? 24 * 60;
     s < i && t.splice(e + 1, 0, { time: s, setpoint: t[e].setpoint });
   }
-  for (; t.length && t.length < tt; ) {
+  for (; t.length && t.length < Q; ) {
     const e = t.findIndex((s, i) => (t[i + 1]?.time ?? 1440) - s.time >= 30);
     if (e < 0) break;
     t.splice(e + 1, 0, { time: t[e].time + 15, setpoint: t[e].setpoint });
   }
   return t;
 }
-function It(a, t) {
-  const e = C(t), s = t.getHours() * 60 + t.getMinutes();
+function Ft(o, t) {
+  const e = O(t), s = t.getHours() * 60 + t.getMinutes();
   for (let i = 0; i < 7; i++) {
-    const n = a[p[(e + i) % 7]];
+    const n = o[p[(e + i) % 7]];
     if (!n) return null;
-    const o = at(n).find((r) => i > 0 || r.time > s);
-    if (o) return { dayOffset: i, time: o.time };
+    const a = it(n).find((r) => i > 0 || r.time > s);
+    if (a) return { dayOffset: i, time: a.time };
   }
   return null;
 }
-const Ue = (a) => `${String(Math.floor(a / 60)).padStart(2, "0")}:${String(a % 60).padStart(2, "0")}`, xt = (a = [], t = []) => JSON.stringify(S(a)) === JSON.stringify(S(t)), Le = new Intl.DateTimeFormat(void 0, { hour: "2-digit", minute: "2-digit" }), N = (a) => Le.format(new Date(2e3, 0, 1, Math.floor(a / 60), a % 60)), Ie = new Intl.DateTimeFormat(void 0, { weekday: "short" }), qe = new Intl.DateTimeFormat(void 0, { weekday: "long" }), J = p.map((a, t) => Ie.format(new Date(2024, 0, 1 + t))), A = p.map((a, t) => qe.format(new Date(2024, 0, 1 + t))), ht = 65535, ot = 1, he = 65534, ct = 16, je = 360, Fe = 3, U = (a) => new Promise((t) => window.setTimeout(t, a)), We = (a) => a instanceof Error ? a.message : String(a?.message ?? a), K = "If a holiday is set on the remote (plane icon), cancel it there first.";
-class x extends Error {
+const Fe = (o) => `${String(Math.floor(o / 60)).padStart(2, "0")}:${String(o % 60).padStart(2, "0")}`, xt = (o = [], t = []) => JSON.stringify(T(o)) === JSON.stringify(T(t)), We = new Intl.DateTimeFormat(void 0, { hour: "2-digit", minute: "2-digit" }), N = (o) => We.format(new Date(2e3, 0, 1, Math.floor(o / 60), o % 60)), Ve = new Intl.DateTimeFormat(void 0, { weekday: "short" }), Je = new Intl.DateTimeFormat(void 0, { weekday: "long" }), ot = p.map((o, t) => Ve.format(new Date(2024, 0, 1 + t))), S = p.map((o, t) => Je.format(new Date(2024, 0, 1 + t))), _t = [
+  "system_mode",
+  "running_state",
+  "occupied_heating_setpoint",
+  "local_temperature",
+  "temperature_setpoint_hold",
+  "temperature_setpoint_hold_duration",
+  "weekly_schedule"
+], ft = "_heat", pe = 65535, Tt = 1440;
+function me(o) {
+  return _t.some((t) => `${t}${ft}` in o);
 }
-const Ve = {
+function Ye(o) {
+  if (!me(o)) return o;
+  const t = {};
+  for (const [e, s] of Object.entries(o))
+    if (e.endsWith(ft)) {
+      const i = e.slice(0, -ft.length);
+      _t.includes(i) && (t[i] = s);
+    } else !e.endsWith("_water") && !_t.includes(e) && (t[e] = s);
+  return t;
+}
+function Ke(o, t) {
+  return t ? Object.fromEntries(Object.entries(o).map(([e, s]) => [`${e}${ft}`, s])) : o;
+}
+function Xe(o) {
+  return { write: { cluster: "hvacThermostat", payload: { 36: { value: o, type: 33 } } } };
+}
+function ht(o) {
+  return o === null || o === pe;
+}
+const at = 1, ct = 16, Ge = 360, Qe = 3, z = (o) => new Promise((t) => window.setTimeout(t, o)), Ze = (o) => o instanceof Error ? o.message : String(o?.message ?? o), U = "If a holiday is set on the remote (plane icon), cancel it there first.", Wt = "That's more than 24 hours away. For longer, set a holiday on the remote.";
+class b extends Error {
+}
+const ts = {
   off: "Off",
   schedule: "Schedule",
   manual: "Manual",
@@ -941,7 +972,7 @@ const Ve = {
   boost: "Boost",
   away: "Away",
   unknown: "an unknown mode"
-}, qt = [
+}, Vt = [
   "temperature_setpoint_hold_duration",
   "temperature_setpoint_hold",
   "system_mode",
@@ -949,43 +980,43 @@ const Ve = {
   "occupied_heating_setpoint",
   "local_temperature"
 ];
-function jt(a) {
-  switch (a.system_mode) {
+function Jt(o) {
+  switch (o.system_mode) {
     case "off":
       return "off";
     case "emergency_heating":
       return "boost";
     case "heat": {
-      if (a.temperature_setpoint_hold === !1) return "schedule";
-      const t = a.temperature_setpoint_hold_duration;
-      return a.temperature_setpoint_hold === !0 && typeof t == "number" ? t === ht ? "manual" : "schedule" : "unknown";
+      if (o.temperature_setpoint_hold === !1) return "schedule";
+      const t = o.temperature_setpoint_hold_duration;
+      return o.temperature_setpoint_hold === !0 && t !== void 0 ? ht(t) ? "manual" : "schedule" : "unknown";
     }
     default:
       return "unknown";
   }
 }
-class Ye {
+class es {
   /**
    * With `stateEntity`, the receiver's reports come from an MQTT sensor carrying them as attributes,
    * which any Home Assistant user may follow. Without it, the topic is watched directly, which
    * Home Assistant only allows administrators to do.
    */
   constructor(t, e, s, i) {
-    this.getHass = t, this.topic = e, this.changed = s, this.stateEntity = i, this.report = {}, this.status = "connecting", this.errorText = "", this.week = {}, this.scheduleState = "idle", this.retainedCommand = !1, this.busy = !1, this.unexpected = "", this.holdEnd = null, this.waiters = [], this.unsubs = [], this.stopped = !1, this.entityAttrs = {}, this.onState = (n) => {
-      let o;
+    this.getHass = t, this.topic = e, this.changed = s, this.stateEntity = i, this.report = {}, this.status = "connecting", this.errorText = "", this.week = {}, this.scheduleState = "idle", this.retainedCommand = !1, this.busy = !1, this.unexpected = "", this.dualChannel = !1, this.holdEnd = null, this.waiters = [], this.unsubs = [], this.stopped = !1, this.entityAttrs = {}, this.onState = (n) => {
+      let a;
       try {
-        o = JSON.parse(n.payload);
+        a = JSON.parse(n.payload);
       } catch {
         return;
       }
-      o && typeof o == "object" && this.onReport(o);
+      a && typeof a == "object" && this.onReport(a);
     }, this.onEntity = (n) => {
-      const o = this.stateEntity, r = n.a?.[o];
+      const a = this.stateEntity, r = n.a?.[a];
       r && (this.entityAttrs = { ...r.a ?? {} }, this.onReport(this.entityAttrs, !1));
-      const l = n.c?.[o];
+      const l = n.c?.[a];
       if (l) {
-        const d = l["+"]?.a;
-        d && (this.entityAttrs = { ...this.entityAttrs, ...d });
+        const c = l["+"]?.a;
+        c && (this.entityAttrs = { ...this.entityAttrs, ...c });
         for (const m of l["-"]?.a ?? []) delete this.entityAttrs[m];
         this.onReport(this.entityAttrs);
       }
@@ -1023,7 +1054,7 @@ class Ye {
     this.unsubs = [];
   }
   requestState() {
-    this.get(Object.fromEntries(qt.map((t) => [t, ""])));
+    this.get(Object.fromEntries(Vt.map((t) => [t, ""])));
   }
   /** The receiver answers with one message per day. */
   requestSchedule() {
@@ -1034,7 +1065,7 @@ class Ye {
   /** What the schedule says right now, or null if it isn't loaded. */
   get scheduledNow() {
     const t = /* @__PURE__ */ new Date();
-    return re(this.week, C(t), t.getHours() * 60 + t.getMinutes());
+    return de(this.week, O(t), t.getHours() * 60 + t.getMinutes());
   }
   /**
    * TPI while it's controlling the boiler, or null. It's found through the integration's heating mode sensor
@@ -1059,14 +1090,14 @@ class Ye {
    */
   get target() {
     const t = this.report.occupied_heating_setpoint, e = this.tpi;
-    return e && jt(this.report) === "schedule" && (t === e.setpoint || t === e.target) ? e.target : t;
+    return e && Jt(this.report) === "schedule" && (t === e.setpoint || t === e.target) ? e.target : t;
   }
   get mode() {
-    const t = jt(this.report), e = this.scheduledNow, s = this.target;
+    const t = Jt(this.report), e = this.scheduledNow, s = this.target;
     if (t === "schedule" && e !== null && s !== void 0 && s !== e) return "override";
     if (t === "boost") {
       const i = this.minutesLeft;
-      if (s !== void 0 && s <= ct || i !== null && i > je) return "away";
+      if (s !== void 0 && s <= ct || i !== null && i > Ge) return "away";
     }
     return t;
   }
@@ -1081,7 +1112,7 @@ class Ye {
    */
   get holdEnds() {
     const t = this.report.temperature_setpoint_hold_duration;
-    return t === void 0 || t === ht || !this.report.temperature_setpoint_hold ? null : this.holdEnd;
+    return t === void 0 || ht(t) || !this.report.temperature_setpoint_hold ? null : this.holdEnd;
   }
   get scheduleDays() {
     return p.filter((t) => this.week[t]).length;
@@ -1091,7 +1122,7 @@ class Ye {
   toSchedule() {
     return this.run("schedule", async () => {
       if (await this.set({ system_mode: "heat", temperature_setpoint_hold: !1 }), !await this.until("temperature_setpoint_hold", (t) => t === !1))
-        throw new x(`The receiver didn't go back to its schedule. ${K}`);
+        throw new b(`The receiver didn't go back to its schedule. ${U}`);
     });
   }
   /**
@@ -1105,11 +1136,12 @@ class Ye {
   }
   /**
    * Away until `until`: a boost at a low temperature for the minutes until then. The receiver counts it
-   * down and goes back to its schedule by itself, without the remote or Home Assistant.
+   * down and goes back to its schedule by itself, without the remote or Home Assistant. Up to 24 hours
+   * (MAX_HOLD): zigbee2mqtt won't pass a longer hold. Longer is the remote's holiday.
    */
   away(t, e) {
-    const s = () => Math.min(he, Math.round((t.getTime() - Date.now()) / 6e4));
-    return s() < 1 ? Promise.reject(new x("Pick a time in the future.")) : this.timedBoost("away", s, e);
+    const s = () => Math.round((t.getTime() - Date.now()) / 6e4);
+    return s() < 1 ? Promise.reject(new b("Pick a time in the future.")) : s() > Tt ? Promise.reject(new b(Wt)) : this.timedBoost("away", s, e);
   }
   /**
    * The receiver sometimes takes the mode but not the length: it keeps "no end" (65534/65535), or 0 so the
@@ -1118,47 +1150,59 @@ class Ye {
    */
   timedBoost(t, e, s) {
     const i = typeof e == "number" ? () => e : e;
-    return this.run(t, async () => {
+    return i() > Tt ? Promise.reject(new b(Wt)) : this.run(t, async () => {
       if (this.report.temperature_setpoint_hold !== !1) {
         if (await this.set({ system_mode: "heat", temperature_setpoint_hold: !1 }), !await this.until("temperature_setpoint_hold", (n) => n === !1))
-          throw new x(`The receiver didn't get ready. ${K}`);
-        await U(1e3);
+          throw new b(`The receiver didn't get ready. ${U}`);
+        await z(1e3);
       }
       for (let n = 1; ; n++) {
-        const o = i();
+        const a = i();
         try {
           if (await this.set({
             system_mode: "emergency_heating",
-            temperature_setpoint_hold_duration: o,
+            temperature_setpoint_hold_duration: a,
             temperature_setpoint_hold: !0,
             occupied_heating_setpoint: s
           }), !await this.until("system_mode", (r) => r === "emergency_heating"))
-            throw new x("The receiver didn't switch to boost.");
-          if (!await this.until("temperature_setpoint_hold_duration", (r) => typeof r == "number" && r >= 1 && r <= o, 3))
-            throw new x("The receiver didn't take the boost length.");
+            throw new b("The receiver didn't switch to boost.");
+          if (!await this.until("temperature_setpoint_hold_duration", (r) => typeof r == "number" && r >= 1 && r <= a, 3))
+            throw new b("The receiver didn't take the boost length.");
           await this.until("occupied_heating_setpoint", (r) => r === s, 2) || await this.setpoint(s);
           return;
         } catch (r) {
           await this.set({ system_mode: "heat", temperature_setpoint_hold: !1 }).catch(() => {
           });
-          const l = await this.until("temperature_setpoint_hold", (d) => d === !1);
-          if (l && n < Fe) {
-            await U(2e3);
+          const l = await this.until("temperature_setpoint_hold", (c) => c === !1);
+          if (l && n < Qe) {
+            await z(2e3);
             continue;
           }
-          throw new x(
-            `${We(r)} ${l ? "The heating is back on its schedule." : "Check the remote: it may still be boosting."}`
+          throw new b(
+            `${Ze(r)} ${l ? "The heating is back on its schedule." : "Check the remote: it may still be boosting."}`
           );
         }
       }
     });
   }
-  /** Hold with no end, then the temperature on its own (the hold resets it to the schedule's). */
+  /**
+   * Hold with no end, then the temperature on its own (the hold resets it to the schedule's). Like a boost's
+   * length, "no end" is written before the hold switches on, from Schedule: a hold that's already on (a
+   * temporary change counting down to the next slot) would keep its count. zigbee2mqtt 2.8 and later refuse 65535
+   * by name, so it goes as a raw write (see z2m.ts).
+   */
   manual(t) {
     return this.run("manual", async () => {
-      if (await this.set({ system_mode: "heat", temperature_setpoint_hold: !0, temperature_setpoint_hold_duration: ht }), !await this.until("temperature_setpoint_hold", (e) => e === !0))
-        throw new x(`The receiver didn't switch to manual. ${K}`);
-      await U(1e3), await this.setpoint(t);
+      if (this.report.temperature_setpoint_hold !== !1) {
+        if (await this.set({ system_mode: "heat", temperature_setpoint_hold: !1 }), !await this.until("temperature_setpoint_hold", (e) => e === !1))
+          throw new b(`The receiver didn't get ready. ${U}`);
+        await z(1e3);
+      }
+      if (await this.set({ system_mode: "heat", ...Xe(pe), temperature_setpoint_hold: !0 }), !await this.until("temperature_setpoint_hold", (e) => e === !0))
+        throw new b(`The receiver didn't switch to manual. ${U}`);
+      if (!await this.until("temperature_setpoint_hold_duration", ht, 3))
+        throw new b("The receiver took Manual with an end time, so it will go back to the schedule by itself.");
+      await z(1e3), await this.setpoint(t);
     });
   }
   /**
@@ -1168,15 +1212,15 @@ class Ye {
    */
   off() {
     return this.run("off", async () => {
-      if (await this.set({ system_mode: "off", temperature_setpoint_hold: !1, occupied_heating_setpoint: ot }), !await this.until("system_mode", (t) => t === "off"))
-        throw new x(`The receiver didn't switch off. ${K}`);
+      if (await this.set({ system_mode: "off", temperature_setpoint_hold: !1, occupied_heating_setpoint: at }), !await this.until("system_mode", (t) => t === "off"))
+        throw new b(`The receiver didn't switch off. ${U}`);
       if (!await this.until("temperature_setpoint_hold", (t) => t === !1))
-        throw new x(`The receiver is off but still holding a temperature, so it may keep heating. ${K}`);
-      if (!await this.until("occupied_heating_setpoint", (t) => t === ot, 2)) {
-        await this.set({ occupied_heating_setpoint: ot });
+        throw new b(`The receiver is off but still holding a temperature, so it may keep heating. ${U}`);
+      if (!await this.until("occupied_heating_setpoint", (t) => t === at, 2)) {
+        await this.set({ occupied_heating_setpoint: at });
         const t = await this.readOne("occupied_heating_setpoint");
-        if (t !== ot)
-          throw new x(`The receiver is off but still set to ${t}°, so it may keep heating. Turn it off on the remote.`);
+        if (t !== at)
+          throw new b(`The receiver is off but still set to ${t}°, so it may keep heating. Turn it off on the remote.`);
       }
     });
   }
@@ -1188,18 +1232,18 @@ class Ye {
     return this.run(this.mode, async () => {
       const s = /* @__PURE__ */ new Map();
       for (const n of e) {
-        const o = JSON.stringify(t[n] ?? []);
-        s.set(o, [...s.get(o) ?? [], n]);
+        const a = JSON.stringify(t[n] ?? []);
+        s.set(a, [...s.get(a) ?? [], n]);
       }
-      for (const [n, o] of s) {
-        const r = le(JSON.parse(n)).map((l) => ({ heatSetpoint: l.setpoint, transitionTime: Ue(l.time) }));
-        await this.set({ weekly_schedule: { dayofweek: o, transitions: r } });
+      for (const [n, a] of s) {
+        const r = ue(JSON.parse(n)).map((l) => ({ heatSetpoint: l.setpoint, transitionTime: Fe(l.time) }));
+        await this.set({ weekly_schedule: { dayofweek: a, transitions: r } });
       }
       this.week = {}, this.requestSchedule();
-      for (let n = 0; n < 50 && this.scheduleState === "loading"; n++) await U(500);
+      for (let n = 0; n < 50 && this.scheduleState === "loading"; n++) await z(500);
       const i = e.filter((n) => !this.week[n] || !xt(this.week[n], t[n]));
       if (i.length)
-        throw new x(
+        throw new b(
           `The receiver didn't confirm ${i.length === e.length ? "the new schedule" : `${i.length} of the days`}. Open the schedule again to see what it has.`
         );
     });
@@ -1211,18 +1255,18 @@ class Ye {
   setTarget(t) {
     const e = this.mode;
     if (e === "off" || e === "unknown")
-      return Promise.reject(new x("Choose Schedule, Manual or Boost first."));
+      return Promise.reject(new b("Choose Schedule, Manual or Boost first."));
     const s = e === "manual" || e === "boost" || e === "away" ? e : t === this.scheduledNow ? "schedule" : "override";
     return this.run(s, () => this.setpoint(t));
   }
   async setpoint(t) {
     for (let e = 0; e < 2; e++)
       if (await this.set({ occupied_heating_setpoint: t }), await this.until("occupied_heating_setpoint", (s) => s === t, 3)) return;
-    throw new x("The receiver didn't take the new temperature.");
+    throw new b("The receiver didn't take the new temperature.");
   }
   /** One command at a time; afterwards, watch for five minutes that the receiver stays put. */
   async run(t, e) {
-    if (this.busy) throw new x("Still sending the last change. Try again in a moment.");
+    if (this.busy) throw new b("Still sending the last change. Try again in a moment.");
     this.busy = !0, this.unexpected = "", this.expect = void 0, this.changed(), this.tellBusy(!0);
     try {
       await e(), this.expect = { mode: t, until: Date.now() + 5 * 6e4 };
@@ -1244,7 +1288,7 @@ class Ye {
    * written, not what the receiver kept (it may reset it a moment later).
    */
   async set(t) {
-    await this.send("set", t), await U(1500);
+    await this.send("set", t), await z(1500);
   }
   /**
    * Publishes to the receiver's /set or /get topic. Since Home Assistant 2026.10 only administrators may
@@ -1252,6 +1296,7 @@ class Ye {
    */
   async send(t, e) {
     const s = this.getHass();
+    e = Ke(e, this.dualChannel);
     try {
       return await s.callService("heating_panel", "send", { topic: this.topic, command: t, payload: e }, void 0, !1);
     } catch (i) {
@@ -1276,7 +1321,7 @@ class Ye {
   async until(t, e, s = 5) {
     for (let i = 0; i < s && !this.stopped; i++) {
       if (e(await this.readOne(t))) return !0;
-      await U(1500);
+      await z(1500);
     }
     return !1;
   }
@@ -1291,14 +1336,15 @@ class Ye {
     });
   }
   onReport(t, e = !0) {
-    const s = this.report;
-    for (const r of qt) r in t && (s[r] = t[r]);
-    if ("temperature_setpoint_hold_duration" in t || "temperature_setpoint_hold" in t) {
-      const r = this.report.temperature_setpoint_hold_duration;
-      if (!this.report.temperature_setpoint_hold || r === void 0 || r === ht) this.holdEnd = null;
+    !this.dualChannel && me(t) && (this.dualChannel = !0, this.scheduleState !== "done" && this.requestSchedule());
+    const s = Ye(t), i = this.report;
+    for (const l of Vt) l in s && (i[l] = s[l]);
+    if ("temperature_setpoint_hold_duration" in s || "temperature_setpoint_hold" in s) {
+      const l = this.report.temperature_setpoint_hold_duration;
+      if (!this.report.temperature_setpoint_hold || l === void 0 || ht(l)) this.holdEnd = null;
       else {
-        const l = Date.now() + (r + 1) * 6e4;
-        this.holdEnd = this.holdEnd === null ? l : Math.min(this.holdEnd, l);
+        const c = Date.now() + (l + 1) * 6e4;
+        this.holdEnd = this.holdEnd === null ? c : Math.min(this.holdEnd, c);
       }
     }
     if (!e) {
@@ -1306,48 +1352,48 @@ class Ye {
       return;
     }
     window.clearTimeout(this.silentTimer), this.status = "live";
-    const i = this.waiters;
+    const n = this.waiters;
     this.waiters = [];
-    for (const r of i) r(t);
-    const n = this.mode;
-    this.expect && !this.busy && n !== "unknown" && n !== this.expect.mode && (Date.now() < this.expect.until && (this.unexpected = `The receiver changed to ${Ve[n]} shortly after your change. If nobody used the remote, it didn't keep the setting.`), this.expect = void 0);
-    const o = t.weekly_schedule;
-    if (o?.days && Array.isArray(o.transitions)) {
-      const r = o.transitions.map((l) => ({ time: l.time, setpoint: l.heating_setpoint }));
-      for (const l of o.days) p.includes(l) && (this.week[l] = r);
+    for (const l of n) l(s);
+    const a = this.mode;
+    this.expect && !this.busy && a !== "unknown" && a !== this.expect.mode && (Date.now() < this.expect.until && (this.unexpected = `The receiver changed to ${ts[a]} shortly after your change. If nobody used the remote, it didn't keep the setting.`), this.expect = void 0);
+    const r = s.weekly_schedule;
+    if (r?.days && Array.isArray(r.transitions)) {
+      const l = r.transitions.map((c) => ({ time: c.time, setpoint: c.heating_setpoint }));
+      for (const c of r.days) p.includes(c) && (this.week[c] = l);
       this.week = { ...this.week }, this.scheduleState !== "done" && this.scheduleDays === p.length && (this.scheduleState = "done", window.clearTimeout(this.scheduleTimer));
     }
     this.changed();
   }
 }
-function Je(a) {
+function ss(o) {
   const t = (e, s) => ({
     pct: e,
     source: s,
-    noHeat: e !== null && e > 0 && !a.boilerHeating
+    noHeat: e !== null && e > 0 && !o.boilerHeating
   });
-  return a.hasSensor ? t(a.sensor, "sensor") : a.state === "off" ? t(0, a.action === void 0 ? "estimated" : "reported") : a.action === "heating" ? t(100, "reported") : a.action === "idle" || a.action === "off" ? t(0, "reported") : a.boilerHeating ? a.current === null || a.target === null ? t(null, "estimated") : t(a.current < a.target ? 100 : 0, "estimated") : t(0, "estimated");
+  return o.hasSensor ? t(o.sensor, "sensor") : o.state === "off" ? t(0, o.action === void 0 ? "estimated" : "reported") : o.action === "heating" ? t(100, "reported") : o.action === "idle" || o.action === "off" ? t(0, "reported") : o.boilerHeating ? o.current === null || o.target === null ? t(null, "estimated") : t(o.current < o.target ? 100 : 0, "estimated") : t(0, "estimated");
 }
-function Ke(a) {
-  if (a.pct === null) return "–";
-  const t = a.source === "sensor" ? `${a.pct}% open` : a.pct > 0 ? "Open" : "Closed";
-  return a.noHeat ? `${t} · boiler off` : t;
+function is(o) {
+  if (o.pct === null) return "–";
+  const t = o.source === "sensor" ? `${o.pct}% open` : o.pct > 0 ? "Open" : "Closed";
+  return o.noHeat ? `${t} · boiler off` : t;
 }
-function Ft(a) {
-  if (a.pct === null) return "Valve position unknown";
-  const t = a.pct > 0 ? "open" : "closed", e = a.source === "sensor" ? `Valve ${a.pct}% open` : a.source === "reported" ? `Valve ${t} (as the valve reports it; it doesn't say how far)` : `Valve ${t} (worked out from the temperatures; this valve doesn't report its position)`;
-  return a.noHeat ? `${e}. The boiler isn't heating, so no heat is reaching this radiator.` : e;
+function Yt(o) {
+  if (o.pct === null) return "Valve position unknown";
+  const t = o.pct > 0 ? "open" : "closed", e = o.source === "sensor" ? `Valve ${o.pct}% open` : o.source === "reported" ? `Valve ${t} (as the valve reports it; it doesn't say how far)` : `Valve ${t} (worked out from the temperatures; this valve doesn't report its position)`;
+  return o.noHeat ? `${e}. The boiler isn't heating, so no heat is reaching this radiator.` : e;
 }
-var Xe = Object.defineProperty, y = (a, t, e, s) => {
-  for (var i = void 0, n = a.length - 1, o; n >= 0; n--)
-    (o = a[n]) && (i = o(t, e, i) || i);
-  return i && Xe(t, e, i), i;
+var ns = Object.defineProperty, g = (o, t, e, s) => {
+  for (var i = void 0, n = o.length - 1, a; n >= 0; n--)
+    (a = o[n]) && (i = a(t, e, i) || i);
+  return i && ns(t, e, i), i;
 };
-const bt = {
+const wt = {
   minutes: { id: "input_number.heating_panel_boost_minutes", name: "Heating panel boost minutes", min: 5, max: 240, step: 5, unit: "min", icon: "mdi:timer-outline" },
   temperature: { id: "input_number.heating_panel_boost_temperature", name: "Heating panel boost temperature", min: 12, max: 32, step: 0.5, unit: "°C", icon: "mdi:thermometer" },
   away_temperature: { id: "input_number.heating_panel_away_temperature", name: "Heating panel away temperature", min: 5, max: 16, step: 0.5, unit: "°C", icon: "mdi:airplane" }
-}, Wt = [15, 30, 45, 60, 90, 120], Qe = (a) => new Promise((t) => window.setTimeout(t, a)), Vt = 1, Yt = ["manual", "boost", "away", "schedule", "override"], Jt = 7, Kt = 28, wt = "heating-panel:schedule-backup", Ge = (a) => JSON.parse(JSON.stringify(a)), vt = {
+}, Kt = [15, 30, 45, 60, 90, 120], os = (o) => new Promise((t) => window.setTimeout(t, o)), Xt = 1, Gt = ["manual", "boost", "away", "schedule", "override"], Qt = 7, Zt = 28, vt = "heating-panel:schedule-backup", as = (o) => JSON.parse(JSON.stringify(o)), $t = {
   off: "Off",
   schedule: "Schedule",
   manual: "Manual",
@@ -1355,29 +1401,29 @@ const bt = {
   boost: "Boost",
   away: "Away",
   unknown: ""
-}, k = (a) => typeof a == "number" && Number.isFinite(a) ? a : null, Ze = (a) => a.charAt(0).toUpperCase() + a.slice(1).replace(/_/g, " "), ts = h`<svg viewBox="0 0 24 24" aria-hidden="true">
+}, x = (o) => typeof o == "number" && Number.isFinite(o) ? o : null, rs = (o) => o.charAt(0).toUpperCase() + o.slice(1).replace(/_/g, " "), ls = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-</svg>`, Xt = h`<svg viewBox="0 0 24 24" aria-hidden="true">
+</svg>`, te = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-</svg>`, es = h`<svg viewBox="0 0 24 24" aria-hidden="true">
+</svg>`, hs = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1-3.6 2.2-4.8.2 1.6 1 2.6 2 3C11 9 11 6 12 3z" fill="currentColor" />
 </svg>`, L = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M6 12h12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
 </svg>`, I = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M6 12h12M12 6v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
-</svg>`, X = (a) => a < 60 ? `${a} min` : a % 60 ? `${Math.floor(a / 60)} h ${a % 60} min` : `${a / 60} h`, Qt = (a) => a instanceof Error ? a.message : String(a?.message ?? a), ss = h`<svg viewBox="0 0 24 24" aria-hidden="true">
+</svg>`, Y = (o) => o < 60 ? `${o} min` : o % 60 ? `${Math.floor(o / 60)} h ${o % 60} min` : `${o / 60} h`, ee = (o) => o instanceof Error ? o.message : String(o?.message ?? o), cs = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <path d="M4 7h9M19 7h1M4 17h3M13 17h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
   <circle cx="16" cy="7" r="2.5" fill="none" stroke="currentColor" stroke-width="2" />
   <circle cx="10" cy="17" r="2.5" fill="none" stroke="currentColor" stroke-width="2" />
-</svg>`, Gt = h`<svg viewBox="0 0 24 24" aria-hidden="true" class="plane">
+</svg>`, se = h`<svg viewBox="0 0 24 24" aria-hidden="true" class="plane">
   <path d="M10.5 21l1.5-1 0-5 8 2.5V15l-8-5V4.5a1.5 1.5 0 0 0-3 0V10l-8 5v2.5L9 15v5l1.5 1z" fill="currentColor" transform="translate(1.5 0)" />
-</svg>`, is = h`<svg viewBox="0 0 24 24" aria-hidden="true">
+</svg>`, ds = h`<svg viewBox="0 0 24 24" aria-hidden="true">
   <rect x="3" y="7" width="16" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2" />
   <path d="M21 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
   <rect x="5.5" y="9.5" width="3" height="5" rx="0.5" fill="currentColor" />
-</svg>`, Et = class Et extends F {
+</svg>`, Ot = class Ot extends F {
   constructor() {
-    super(...arguments), this.narrow = !1, this.view = { kind: "main" }, this.kiosk = !1, this.scheduleDay = C(/* @__PURE__ */ new Date()), this.tick = 0, this.boostOpen = !1, this.boostMinutes = 15, this.boostTemp = 22, this.awayOpen = !1, this.awayDay = 0, this.awayTime = 18 * 60, this.awayTemp = 14, this.toast = "", this.toastError = !1, this.chosen = {}, this.draft = null, this.editing = null, this.copyDays = null, this.frozen = null, this.queuedTemp = null, this.started = !1, this.onVisibility = () => {
+    super(...arguments), this.narrow = !1, this.view = { kind: "main" }, this.kiosk = !1, this.scheduleDay = O(/* @__PURE__ */ new Date()), this.tick = 0, this.boostOpen = !1, this.boostMinutes = 15, this.boostTemp = 22, this.awayOpen = !1, this.awayDay = 0, this.awayTime = 18 * 60, this.awayTemp = 14, this.toast = "", this.toastError = !1, this.chosen = {}, this.draft = null, this.editing = null, this.copyDays = null, this.frozen = null, this.queuedTemp = null, this.started = !1, this.onVisibility = () => {
       document.hidden || this.link?.requestState();
     }, this.onKeyDown = (t) => {
       t.key === "Escape" && (this.boostOpen = !1, this.awayOpen = !1, this.editing = null, this.copyDays = null);
@@ -1385,7 +1431,7 @@ const bt = {
       const t = this.link;
       if (!t) return;
       const e = this.boostMinutes, s = this.boostTemp;
-      this.boostOpen = !1, this.command(() => t.boost(e, s), `Boosting for ${X(e)}`, "boost", s);
+      this.boostOpen = !1, this.command(() => t.boost(e, s), `Boosting for ${Y(e)}`, "boost", s);
     }, this.startAway = () => {
       const t = this.link;
       if (!t) return;
@@ -1405,23 +1451,23 @@ const bt = {
       const t = this.link;
       if (!t) return;
       const e = this.untidyDays, s = {};
-      for (const i of e) s[i] = S(t.week[i]);
+      for (const i of e) s[i] = T(t.week[i]);
       this.command(
         () => t.saveSchedule(s, e),
-        `Tidied ${e.length === 1 ? A[p.indexOf(e[0])] : `${e.length} days`}; your heating times are unchanged`
+        `Tidied ${e.length === 1 ? S[p.indexOf(e[0])] : `${e.length} days`}; your heating times are unchanged`
       );
     }, this.applyPoint = () => {
       const t = this.editing;
       if (!t) return;
       const e = p[t.day];
-      if (S(this.shownWeek[e] ?? []).findIndex((o, r) => o.time === t.time && r !== t.index) >= 0) {
+      if (T(this.shownWeek[e] ?? []).findIndex((a, r) => a.time === t.time && r !== t.index) >= 0) {
         this.showToast(`There's already a change at ${N(t.time)}. Pick another time.`, !0);
         return;
       }
-      const n = { time: t.time, setpoint: t.off ? Vt : t.setpoint };
-      this.editDraft((o) => {
-        const r = [...o[e] ?? []];
-        t.index === null ? r.push(n) : r[t.index] = n, o[e] = r.sort((l, d) => l.time - d.time);
+      const n = { time: t.time, setpoint: t.off ? Xt : t.setpoint };
+      this.editDraft((a) => {
+        const r = [...a[e] ?? []];
+        t.index === null ? r.push(n) : r[t.index] = n, a[e] = r.sort((l, c) => l.time - c.time);
       }), this.editing = null;
     }, this.removePoint = () => {
       const t = this.editing;
@@ -1436,22 +1482,22 @@ const bt = {
       const e = p[this.scheduleDay];
       this.editDraft((s) => {
         for (const i of t) s[p[i]] = [...s[e] ?? []];
-      }), this.showToast(`Copied to ${t.length === 1 ? A[t[0]] : `${t.length} days`}. Save to send it.`), this.copyDays = null;
+      }), this.showToast(`Copied to ${t.length === 1 ? S[t[0]] : `${t.length} days`}. Save to send it.`), this.copyDays = null;
     }, this.saveSchedule = () => {
       const t = this.link, e = this.draft;
       if (!t || !e) return;
       const s = this.dirtyDays;
       try {
-        localStorage.getItem(wt) || localStorage.setItem(wt, JSON.stringify({ saved: (/* @__PURE__ */ new Date()).toISOString(), week: t.week }));
+        localStorage.getItem(vt) || localStorage.setItem(vt, JSON.stringify({ saved: (/* @__PURE__ */ new Date()).toISOString(), week: t.week }));
       } catch {
       }
       this.command(async () => {
         await t.saveSchedule(e, s), this.draft = null;
-      }, `Saved to the receiver (${s.length === 1 ? A[p.indexOf(s[0])] : `${s.length} days`})`);
+      }, `Saved to the receiver (${s.length === 1 ? S[p.indexOf(s[0])] : `${s.length} days`})`);
     }, this.restoreBackup = () => {
       const t = this.backup;
       t && (this.editDraft((e) => {
-        for (const s of p) t.week[s] && (e[s] = S(t.week[s]));
+        for (const s of p) t.week[s] && (e[s] = T(t.week[s]));
       }), this.showToast(this.draft ? "Previous schedule loaded. Save to send it." : "That's already the receiver's schedule."));
     };
   }
@@ -1468,32 +1514,32 @@ const bt = {
     if (this.started || !this.hass || !this.panel) return;
     this.started = !0, this.applyUrl();
     const t = this.rc?.topic;
-    t && (this.link = new Ye(() => this.hass, t, () => this.requestUpdate(), this.rc?.state_entity), this.link.start());
+    t && (this.link = new es(() => this.hass, t, () => this.requestUpdate(), this.rc?.state_entity), this.link.start());
   }
   showToast(t, e = !1) {
     this.toast = t, this.toastError = e, window.clearTimeout(this.toastTimer), this.toastTimer = window.setTimeout(() => this.toast = "", e ? 8e3 : 2500);
   }
   async command(t, e, s, i) {
     if (s) {
-      const d = this.liveReceiver;
-      this.frozen = { view: i === void 0 ? d : { ...d, target: i, off: !1 }, mode: s };
+      const c = this.liveReceiver;
+      this.frozen = { view: i === void 0 ? c : { ...c, target: i, off: !1 }, mode: s };
     }
     let n = !1;
     try {
       await t(), n = !0, this.queuedTemp === null && this.showToast(e);
-    } catch (d) {
-      this.showToast(Qt(d), !0);
+    } catch (c) {
+      this.showToast(ee(c), !0);
     } finally {
       this.frozen = null;
     }
-    const o = this.queuedTemp;
+    const a = this.queuedTemp;
     this.queuedTemp = null;
     const r = this.link, l = s ?? this.receiver.mode;
-    n && o !== null && r && this.command(
-      () => r.setTarget(o),
-      `${l === "manual" ? "Manual at" : "Set to"} ${w(o)}`,
+    n && a !== null && r && this.command(
+      () => r.setTarget(a),
+      `${l === "manual" ? "Manual at" : "Set to"} ${w(a)}`,
       l,
-      o
+      a
     );
   }
   /** The dial can be used now, including while a change is still being sent (the turn is then queued). */
@@ -1501,7 +1547,7 @@ const bt = {
     const e = this.link;
     if (!e || e.status !== "live") return !1;
     const s = this.frozen?.mode ?? t;
-    return !Yt.includes(s) || (s === "schedule" || s === "override") && this.rc?.controls?.override === !1 ? !1 : !e.busy || !!this.frozen;
+    return !Gt.includes(s) || (s === "schedule" || s === "override") && this.rc?.controls?.override === !1 ? !1 : !e.busy || !!this.frozen;
   }
   /**
    * The dial was turned. While a change is still being sent (e.g. Manual being set up, which resets the
@@ -1511,10 +1557,10 @@ const bt = {
     const s = this.link;
     if (!s) return;
     if (s.busy) {
-      this.frozen && Yt.includes(this.frozen.mode) && (this.queuedTemp = t, this.frozen = { ...this.frozen, view: { ...this.frozen.view, target: t, off: !1 } });
+      this.frozen && Gt.includes(this.frozen.mode) && (this.queuedTemp = t, this.frozen = { ...this.frozen, view: { ...this.frozen.view, target: t, off: !1 } });
       return;
     }
-    const i = e === "schedule" || e === "override" ? It(s.week, /* @__PURE__ */ new Date()) : null, n = i ? ` until ${this.whenText({ ...i, setpoint: t }).replace(/^at /, "")}` : "";
+    const i = e === "schedule" || e === "override" ? Ft(s.week, /* @__PURE__ */ new Date()) : null, n = i ? ` until ${this.whenText({ ...i, setpoint: t }).replace(/^at /, "")}` : "";
     this.command(() => s.setTarget(t), `${w(t)}${n}`, e, t);
   }
   onMode(t) {
@@ -1541,7 +1587,7 @@ const bt = {
   setting(t) {
     const e = this.chosen[t];
     if (e !== void 0) return e;
-    const s = Number(this.hass?.states[bt[t].id]?.state);
+    const s = Number(this.hass?.states[wt[t].id]?.state);
     if (Number.isFinite(s)) return s;
     const i = this.rc?.controls, n = typeof i?.boost == "object" ? i.boost : {};
     return (t === "away_temperature" ? i?.away_temperature : n[t]) ?? { minutes: 15, temperature: 22, away_temperature: 14 }[t];
@@ -1551,7 +1597,7 @@ const bt = {
     return { minutes: Math.min(this.setting("minutes"), e), temperature: this.setting("temperature"), max_minutes: e };
   }
   async saveSetting(t, e) {
-    const s = bt[t];
+    const s = wt[t];
     this.chosen = { ...this.chosen, [t]: e };
     try {
       if (!this.hass.states[s.id]) {
@@ -1566,14 +1612,14 @@ const bt = {
           unit_of_measurement: s.unit,
           icon: s.icon
         });
-        for (let i = 0; i < 20 && !this.hass.states[s.id]; i++) await Qe(250);
+        for (let i = 0; i < 20 && !this.hass.states[s.id]; i++) await os(250);
         if (!this.hass.states[s.id])
           throw new Error(`the helper was created but ${s.id} didn't appear. Check Settings → Devices & services → Helpers.`);
       }
       await this.hass.callService("input_number", "set_value", { value: e }, { entity_id: s.id }), this.showToast("Saved for everyone");
     } catch (i) {
-      const { [t]: n, ...o } = this.chosen;
-      this.chosen = o, this.showToast(`Couldn't save: ${Qt(i)}`, !0);
+      const { [t]: n, ...a } = this.chosen;
+      this.chosen = a, this.showToast(`Couldn't save: ${ee(i)}`, !0);
     }
   }
   openBoost() {
@@ -1592,7 +1638,7 @@ const bt = {
   /** "Sun at 18:00", "tomorrow at 18:00", "12 Oct at 18:00". */
   dateText(t) {
     const e = Math.round((new Date(t).setHours(0, 0, 0, 0) - this.dayFromToday(0)) / 864e5);
-    return `${e === 0 ? "today" : e === 1 ? "tomorrow" : e < 7 ? J[C(t)] : t.toLocaleDateString(void 0, { day: "numeric", month: "short" })} at ${N(t.getHours() * 60 + t.getMinutes())}`;
+    return `${e === 0 ? "today" : e === 1 ? "tomorrow" : e < 7 ? ot[O(t)] : t.toLocaleDateString(void 0, { day: "numeric", month: "short" })} at ${N(t.getHours() * 60 + t.getMinutes())}`;
   }
   /** When an Away running now ends, from the receiver's countdown. */
   get awayEnds() {
@@ -1600,7 +1646,8 @@ const bt = {
     return t == null ? null : new Date(Math.round(t / 6e4) * 6e4);
   }
   openAway() {
-    this.awayDay = this.dayFromToday(1), this.awayTime = 18 * 60, this.awayTemp = this.setting("away_temperature"), this.awayOpen = !0;
+    const t = /* @__PURE__ */ new Date();
+    this.awayTime = 18 * 60, this.awayDay = this.dayFromToday(t.getHours() * 60 + t.getMinutes() < this.awayTime ? 0 : 1), this.awayTemp = this.setting("away_temperature"), this.awayOpen = !0;
   }
   /**
    * Reads options from the address, so dashboard buttons can open e.g. /heating?view=schedule
@@ -1613,11 +1660,11 @@ const bt = {
     this.kiosk = s !== null && s !== "0" && s !== "false";
     const i = e.get("radiator")?.toLowerCase();
     if (i) {
-      const o = this.radiators.findIndex(
+      const a = this.radiators.findIndex(
         (r) => [r.name, r.entity, r.entity.split(".")[1]].some((l) => l?.toLowerCase() === i)
       );
-      if (o >= 0) {
-        this.view = { kind: "radiator", index: o };
+      if (a >= 0) {
+        this.view = { kind: "radiator", index: a };
         return;
       }
     }
@@ -1650,26 +1697,26 @@ const bt = {
   get liveReceiver() {
     const t = this.link;
     if (t?.status === "live") {
-      const s = t.report, i = t.mode, n = k(t.target);
+      const s = t.report, i = t.mode, n = x(t.target);
       return {
         mode: i,
         target: n,
-        off: i === "off" || n !== null && E(n),
-        current: k(s.local_temperature),
+        off: i === "off" || n !== null && A(n),
+        current: x(s.local_temperature),
         heating: s.running_state === "heat"
       };
     }
     const e = this.rc?.entity ? this.hass?.states[this.rc.entity] : void 0;
     return {
       mode: "unknown",
-      target: k(e?.attributes.temperature),
+      target: x(e?.attributes.temperature),
       off: e?.state === "off",
-      current: k(e?.attributes.current_temperature),
+      current: x(e?.attributes.current_temperature),
       heating: e?.attributes.hvac_action === "heating"
     };
   }
   whenText(t) {
-    return `${t.dayOffset === 0 ? "" : t.dayOffset === 1 ? "tomorrow " : `${J[(C(/* @__PURE__ */ new Date()) + t.dayOffset) % 7]} `}at ${N(t.time)}`;
+    return `${t.dayOffset === 0 ? "" : t.dayOffset === 1 ? "tomorrow " : `${ot[(O(/* @__PURE__ */ new Date()) + t.dayOffset) % 7]} `}at ${N(t.time)}`;
   }
   /** The line under the room temperature: what happens next. */
   noteFor(t) {
@@ -1685,13 +1732,13 @@ const bt = {
     }
     if (t === "manual") return { text: "Until you change it", attention: !1 };
     if (t === "schedule" || t === "override") {
-      const s = Be(e.week, /* @__PURE__ */ new Date());
+      const s = qe(e.week, /* @__PURE__ */ new Date());
       if (!s) return { text: "", attention: !1 };
       if (t === "override") {
-        const n = It(e.week, /* @__PURE__ */ new Date());
+        const n = Ft(e.week, /* @__PURE__ */ new Date());
         return { text: n ? `Back to schedule ${this.whenText({ ...n, setpoint: 0 })}` : "", attention: !1 };
       }
-      return { text: `${E(s.setpoint) ? "Off" : w(s.setpoint)} ${this.whenText(s)}`, attention: !1 };
+      return { text: `${A(s.setpoint) ? "Off" : w(s.setpoint)} ${this.whenText(s)}`, attention: !1 };
     }
     return { text: "", attention: !1 };
   }
@@ -1707,18 +1754,18 @@ const bt = {
         ${this.renderHeader(s)} ${this.renderNotices()}
         ${t.kind === "schedule" ? this.renderSchedule() : t.kind === "settings" ? this.renderSettings() : e ? this.renderRadiator(e) : this.renderMain()}
         ${this.renderBoostSheet()} ${this.renderAwaySheet()}
-        ${this.toast ? h`<div class="toast ${this.toastError ? "error" : ""}" role="status">${this.toast}</div>` : c}
+        ${this.toast ? h`<div class="toast ${this.toastError ? "error" : ""}" role="status">${this.toast}</div>` : d}
       </div>
     `;
   }
   renderHeader(t) {
     const e = this.view.kind !== "main";
     return this.kiosk && !e ? h`<div class="kiosk-gap"></div>` : h`<header>
-      ${e ? h`<button class="round back" title="Back" aria-label="Back" @click=${this.back}>${ts}</button>` : this.narrow ? h`<ha-menu-button .hass=${this.hass} .narrow=${this.narrow}></ha-menu-button>` : c}
+      ${e ? h`<button class="round back" title="Back" aria-label="Back" @click=${this.back}>${ls}</button>` : this.narrow ? h`<ha-menu-button .hass=${this.hass} .narrow=${this.narrow}></ha-menu-button>` : d}
       <h1>${t}</h1>
       ${!e && this.isAdmin ? h`<button class="round" title="Settings" aria-label="Settings" @click=${() => this.go({ view: "settings" })}>
-            ${ss}
-          </button>` : c}
+            ${cs}
+          </button>` : d}
     </header>`;
   }
   renderNotices() {
@@ -1773,7 +1820,7 @@ const bt = {
         Your MQTT broker has a saved command for the receiver (a retained message on “${t.topic}/set”).
         zigbee2mqtt sends it again every time it restarts, which can turn on a boost by itself. Delete it with an
         MQTT tool such as MQTT Explorer.
-      </p>`), e.length ? h`<div class="notices">${e}</div>` : c;
+      </p>`), e.length ? h`<div class="notices">${e}</div>` : d;
   }
   /** The configuration.yaml snippet for the receiver sensor, filled in for this receiver. */
   sensorYaml() {
@@ -1800,7 +1847,7 @@ recorder:
         { mode: "off", label: "Off" }
       ] : [],
       ...i.boost ? [{ mode: "boost", label: "Boost" }] : []
-    ], o = e.mode === "override" ? "schedule" : e.mode, r = this.link, l = r?.status === "live" && !r.busy, d = this.dialUsable(e.mode), m = e.mode === "away" && !this.frozen ? this.awayEnds : null, u = r?.status === "live" ? r.tpi : null;
+    ], a = e.mode === "override" ? "schedule" : e.mode, r = this.link, l = r?.status === "live" && !r.busy, c = this.dialUsable(e.mode), m = e.mode === "away" && !this.frozen ? this.awayEnds : null, u = r?.status === "live" ? r.tpi : null;
     return h`
       <section class="hero">
         <heating-dial
@@ -1810,31 +1857,31 @@ recorder:
           .current=${e.current}
           .off=${e.off}
           .active=${e.heating || e.mode === "boost"}
-          .label=${u && vt[e.mode] ? `${vt[e.mode]} · TPI` : vt[e.mode]}
+          .label=${u && $t[e.mode] ? `${$t[e.mode]} · TPI` : $t[e.mode]}
           .note=${s.text}
           .attention=${s.attention}
-          .readonly=${!d}
-          @dial-change=${(f) => this.onDial(f.detail.value, e.mode)}
+          .readonly=${!c}
+          @dial-change=${(v) => this.onDial(v.detail.value, e.mode)}
         ></heating-dial>
         <p class="running ${e.heating && !r?.busy ? "on" : ""}">
-          ${r?.busy ? "Sending to the receiver…" : e.heating ? h`${es} Heating now` : "Not heating"}
+          ${r?.busy ? "Sending to the receiver…" : e.heating ? h`${hs} Heating now` : "Not heating"}
         </p>
-        ${u && !r?.busy ? this.renderTpi(u) : c}
+        ${u && !r?.busy ? this.renderTpi(u) : d}
       </section>
 
       ${n.length ? h`<div class="modes" style=${`--n: ${n.length}`}>
             ${n.map(
-      (f) => h`<button
+      (v) => h`<button
                 class="mode"
-                aria-pressed=${String(o === f.mode)}
-                title=${f.label}
+                aria-pressed=${String(a === v.mode)}
+                title=${v.label}
                 ?disabled=${!l}
-                @click=${() => this.onMode(f.mode)}
+                @click=${() => this.onMode(v.mode)}
               >
-                ${f.label}
+                ${v.label}
               </button>`
     )}
-          </div>` : c}
+          </div>` : d}
 
       ${i.away ? h`<button
             class="away-button"
@@ -1842,16 +1889,16 @@ recorder:
             ?disabled=${!l || e.mode === "boost"}
             @click=${() => this.openAway()}
           >
-            ${Gt}
+            ${se}
             ${e.mode === "away" ? m ? `Away until ${this.dateText(m)}` : "Away" : "Going away?"}
-          </button>` : c}
+          </button>` : d}
 
       <button class="card" @click=${() => this.go({ view: "schedule" })}>
         <span class="card-head">
           <span>Schedule</span>
-          ${Xt}
+          ${te}
         </span>
-        ${this.renderBar(C(/* @__PURE__ */ new Date()))} ${this.renderTicks()}
+        ${this.renderBar(O(/* @__PURE__ */ new Date()))} ${this.renderTicks()}
         ${this.renderScheduleStatus()}
       </button>
 
@@ -1860,11 +1907,11 @@ recorder:
   }
   renderSettings() {
     if (!this.isAdmin) return h`<p class="notice">Only an administrator can change these settings.</p>`;
-    const t = this.setting("minutes"), e = this.boostConfig.max_minutes, s = (i, n, o, r) => {
+    const t = this.setting("minutes"), e = this.boostConfig.max_minutes, s = (i, n, a, r) => {
       const l = this.setting(i);
       return h`<div class="stepper">
-        <button class="round" title="Lower" aria-label=${`Lower the ${n}`} ?disabled=${l <= o}
-          @click=${() => this.saveSetting(i, Math.max(o, l - 0.5))}>${L}</button>
+        <button class="round" title="Lower" aria-label=${`Lower the ${n}`} ?disabled=${l <= a}
+          @click=${() => this.saveSetting(i, Math.max(a, l - 0.5))}>${L}</button>
         <span class="stepper-value">${w(l)}</span>
         <button class="round" title="Raise" aria-label=${`Raise the ${n}`} ?disabled=${l >= r}
           @click=${() => this.saveSetting(i, Math.min(r, l + 0.5))}>${I}</button>
@@ -1875,9 +1922,9 @@ recorder:
       <h2>Boost</h2>
       <p class="sheet-label">Usual length</p>
       <div class="chips">
-        ${Wt.filter((i) => i <= e).map(
+        ${Kt.filter((i) => i <= e).map(
       (i) => h`<button class="chip" aria-pressed=${String(i === t)} @click=${() => this.saveSetting("minutes", i)}>
-            ${X(i)}
+            ${Y(i)}
           </button>`
     )}
       </div>
@@ -1885,19 +1932,16 @@ recorder:
       ${s("temperature", "usual boost temperature", 12, this.rc?.max_temp ?? 32)}
       ${this.controls.away ? h`<h2>Away</h2>
             <p class="sheet-label">Temperature while away</p>
-            ${s("away_temperature", "away temperature", bt.away_temperature.min, ct)}` : c}
+            ${s("away_temperature", "away temperature", wt.away_temperature.min, ct)}` : d}
     `;
   }
   renderAwaySheet() {
-    if (!this.awayOpen) return c;
-    const t = this.link, e = !!t?.busy, s = t?.mode === "away", i = this.awayEnds, n = this.awayUntil, o = (n.getTime() - Date.now()) / 6e4, r = o >= 1 && o <= he, l = (u) => {
-      const f = new Date(u);
-      return `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, "0")}-${String(f.getDate()).padStart(2, "0")}`;
-    }, d = [1, 2, 3, 4, 5, 6, 7].map((u) => this.dayFromToday(u)), m = (u) => this.awayTime = (this.awayTime + u + 24 * 60) % (24 * 60);
-    return h`<div class="sheet-backdrop" @click=${(u) => u.target === u.currentTarget && (this.awayOpen = !1)}>
+    if (!this.awayOpen) return d;
+    const t = this.link, e = !!t?.busy, s = t?.mode === "away", i = this.awayEnds, n = this.awayUntil, a = (n.getTime() - Date.now()) / 6e4, r = a >= 1 && a <= Tt, l = (c) => this.awayTime = (this.awayTime + c + 24 * 60) % (24 * 60);
+    return h`<div class="sheet-backdrop" @click=${(c) => c.target === c.currentTarget && (this.awayOpen = !1)}>
       <div class="sheet" role="dialog" aria-modal="true" aria-label="Away">
         <div class="sheet-head">
-          <span>${Gt} Away</span>
+          <span>${se} Away</span>
           <button class="close" @click=${() => this.awayOpen = !1}>Close</button>
         </div>
         ${s ? h`<p class="sheet-text">
@@ -1906,36 +1950,25 @@ recorder:
               </p>
               <button class="primary" ?disabled=${e} @click=${this.endAway}>We're back: end Away now</button>` : h`<p class="sheet-text">
                 Keeps the house at a low temperature while you're away, then goes back to the schedule by itself. Set
-                the return a little early to come home to a warm house.
+                the return a little early to come home to a warm house. Up to 24 hours: for longer, set a holiday on the
+                remote (plane icon).
               </p>
-              <p class="sheet-label">Back on</p>
+              <p class="sheet-label">Back</p>
               <div class="chips">
-                ${d.slice(0, 6).map(
-      (u, f) => h`<button class="chip" aria-pressed=${String(u === this.awayDay)} @click=${() => this.awayDay = u}>
-                    ${f === 0 ? "Tomorrow" : J[C(new Date(u))]}
-                  </button>`
-    )}
+                ${[0, 1].map((c) => {
+      const m = this.dayFromToday(c);
+      return h`<button class="chip" aria-pressed=${String(m === this.awayDay)} @click=${() => this.awayDay = m}>
+                    ${c === 0 ? "Today" : "Tomorrow"}
+                  </button>`;
+    })}
               </div>
-              <label class="date-pick">
-                <span>Or a date</span>
-                <input
-                  type="date"
-                  .value=${l(this.awayDay)}
-                  min=${l(this.dayFromToday(0))}
-                  max=${l(this.dayFromToday(44))}
-                  @change=${(u) => {
-      const [f, T, B] = u.target.value.split("-").map(Number);
-      f && (this.awayDay = new Date(f, T - 1, B).getTime());
-    }}
-                />
-              </label>
               <p class="sheet-label">at</p>
               <div class="stepper time-stepper">
-                <button class="round small" title="An hour earlier" aria-label="An hour earlier" @click=${() => m(-60)}>−1h</button>
-                <button class="round" title="15 minutes earlier" aria-label="15 minutes earlier" @click=${() => m(-15)}>${L}</button>
+                <button class="round small" title="An hour earlier" aria-label="An hour earlier" @click=${() => l(-60)}>−1h</button>
+                <button class="round" title="15 minutes earlier" aria-label="15 minutes earlier" @click=${() => l(-15)}>${L}</button>
                 <span class="stepper-value">${N(this.awayTime)}</span>
-                <button class="round" title="15 minutes later" aria-label="15 minutes later" @click=${() => m(15)}>${I}</button>
-                <button class="round small" title="An hour later" aria-label="An hour later" @click=${() => m(60)}>+1h</button>
+                <button class="round" title="15 minutes later" aria-label="15 minutes later" @click=${() => l(15)}>${I}</button>
+                <button class="round small" title="An hour later" aria-label="An hour later" @click=${() => l(60)}>+1h</button>
               </div>
               <p class="sheet-label">Temperature while away</p>
               <div class="stepper">
@@ -1946,14 +1979,14 @@ recorder:
                   @click=${() => this.awayTemp = Math.min(ct, this.awayTemp + 0.5)}>${I}</button>
               </div>
               <button class="primary" ?disabled=${e || !r || t?.status !== "live"} @click=${this.startAway}>
-                ${r ? `Away until ${this.dateText(n)}` : o < 1 ? "Pick a time in the future" : "That's too far ahead (45 days at most)"}
+                ${r ? `Away until ${this.dateText(n)}` : a < 1 ? "Pick a time in the future" : "That's more than 24 hours away"}
               </button>`}
       </div>
     </div>`;
   }
   renderBoostSheet() {
-    if (!this.boostOpen) return c;
-    const t = this.link, e = !!t?.busy, s = this.boostConfig, i = t?.mode === "boost", n = this.rc?.max_temp ?? 32, o = [.../* @__PURE__ */ new Set([...Wt, s.minutes])].filter((l) => l <= s.max_minutes).sort((l, d) => l - d), r = t?.minutesLeft;
+    if (!this.boostOpen) return d;
+    const t = this.link, e = !!t?.busy, s = this.boostConfig, i = t?.mode === "boost", n = this.rc?.max_temp ?? 32, a = [.../* @__PURE__ */ new Set([...Kt, s.minutes])].filter((l) => l <= s.max_minutes).sort((l, c) => l - c), r = t?.minutesLeft;
     return h`<div
       class="sheet-backdrop"
       @click=${(l) => {
@@ -1966,17 +1999,17 @@ recorder:
           <button class="close" @click=${() => this.boostOpen = !1}>Close</button>
         </div>
         ${i ? h`<p class="sheet-text">
-                Boosting at ${w(t?.report.occupied_heating_setpoint ?? 0)}${r == null ? "" : r === 0 ? ", less than a minute left" : `, ${X(r)} left`}.
+                Boosting at ${w(t?.report.occupied_heating_setpoint ?? 0)}${r == null ? "" : r === 0 ? ", less than a minute left" : `, ${Y(r)} left`}.
               </p>
               <button class="primary" ?disabled=${e} @click=${this.stopBoost}>Stop boost</button>` : h`<p class="sheet-label">How long</p>
               <div class="chips">
-                ${o.map(
+                ${a.map(
       (l) => h`<button
                     class="chip"
                     aria-pressed=${String(l === this.boostMinutes)}
                     @click=${() => this.boostMinutes = l}
                   >
-                    ${X(l)}
+                    ${Y(l)}
                   </button>`
     )}
               </div>
@@ -2003,26 +2036,26 @@ recorder:
                 </button>
               </div>
               <button class="primary" ?disabled=${e || t?.status !== "live"} @click=${this.startBoost}>
-                Boost for ${X(this.boostMinutes)}
+                Boost for ${Y(this.boostMinutes)}
               </button>`}
       </div>
     </div>`;
   }
   renderScheduleStatus() {
     const t = this.link?.scheduleState;
-    return t === "loading" && !this.link?.scheduleDays ? h`<p class="empty">Reading the schedule from the receiver…</p>` : t === "partial" ? h`<p class="empty">Only ${this.link?.scheduleDays} of 7 days came back from the receiver.</p>` : c;
+    return t === "loading" && !this.link?.scheduleDays ? h`<p class="empty">Reading the schedule from the receiver…</p>` : t === "partial" ? h`<p class="empty">Only ${this.link?.scheduleDays} of 7 days came back from the receiver.</p>` : d;
   }
   renderBar(t, e = this.link?.week ?? {}) {
-    const s = Re(e, t), i = /* @__PURE__ */ new Date(), n = i.getHours() * 60 + i.getMinutes(), o = t === C(i);
+    const s = je(e, t), i = /* @__PURE__ */ new Date(), n = i.getHours() * 60 + i.getMinutes(), a = t === O(i);
     return h`<span class="bar ${s.length ? "" : "unknown"}">
       ${s.map((r) => {
-      const l = r.setpoint === null ? "unknown" : E(r.setpoint) ? "off" : "on", d = l === "on" ? `background: ${$t(r.setpoint)};` : "";
+      const l = r.setpoint === null ? "unknown" : A(r.setpoint) ? "off" : "on", c = l === "on" ? `background: ${kt(r.setpoint)};` : "";
       return h`<span
           class="seg ${l}"
-          style=${`left: ${r.start / 14.4}%; width: ${(r.end - r.start) / 14.4}%; ${d}`}
+          style=${`left: ${r.start / 14.4}%; width: ${(r.end - r.start) / 14.4}%; ${c}`}
         ></span>`;
     })}
-      ${o && s.length ? h`<span class="now" style=${`left: ${n / 14.4}%`}></span>` : c}
+      ${a && s.length ? h`<span class="now" style=${`left: ${n / 14.4}%`}></span>` : d}
     </span>`;
   }
   renderTicks() {
@@ -2045,8 +2078,8 @@ recorder:
     return t ? p.filter((s) => !xt(t[s], e[s])) : [];
   }
   editDraft(t) {
-    const e = Ge(this.draft ?? this.link?.week ?? {});
-    for (const s of p) e[s] && (e[s] = S(e[s]));
+    const e = as(this.draft ?? this.link?.week ?? {});
+    for (const s of p) e[s] && (e[s] = T(e[s]));
     t(e), this.draft = this.dirtyDaysOf(e).length ? e : null;
   }
   /**
@@ -2055,7 +2088,7 @@ recorder:
    */
   get untidyDays() {
     const t = this.link?.week ?? {}, e = (s) => JSON.stringify([...s].sort((i, n) => i.time - n.time));
-    return p.filter((s) => t[s] && e(t[s]) !== e(le(t[s])));
+    return p.filter((s) => t[s] && e(t[s]) !== e(ue(t[s])));
   }
   dirtyDaysOf(t) {
     const e = this.link?.week ?? {};
@@ -2063,54 +2096,54 @@ recorder:
   }
   openPoint(t, e) {
     if (!this.canEditSchedule) return;
-    const s = S(this.shownWeek[p[t]] ?? []), i = e === null ? void 0 : s[e], n = s[s.length - 1], o = i?.time ?? Math.min(23 * 60 + 45, (n?.time ?? 6 * 60) + 60), r = i?.setpoint ?? (n && !E(n.setpoint) ? Vt : 20);
+    const s = T(this.shownWeek[p[t]] ?? []), i = e === null ? void 0 : s[e], n = s[s.length - 1], a = i?.time ?? Math.min(23 * 60 + 45, (n?.time ?? 6 * 60) + 60), r = i?.setpoint ?? (n && !A(n.setpoint) ? Xt : 20);
     this.editing = {
       day: t,
       index: e,
-      time: o,
-      setpoint: E(r) ? 20 : r,
-      off: E(r)
+      time: a,
+      setpoint: A(r) ? 20 : r,
+      off: A(r)
     };
   }
   get backup() {
     try {
-      const t = localStorage.getItem(wt);
+      const t = localStorage.getItem(vt);
       return t ? JSON.parse(t) : null;
     } catch {
       return null;
     }
   }
   renderSchedule() {
-    const t = this.shownWeek, e = this.scheduleDay, s = S(t[p[e]] ?? []), i = this.link?.scheduleState, n = this.canEditSchedule, o = this.dirtyDays, r = this.backup;
+    const t = this.shownWeek, e = this.scheduleDay, s = T(t[p[e]] ?? []), i = this.link?.scheduleState, n = this.canEditSchedule, a = this.dirtyDays, r = this.backup;
     return h`
-      <section class="schedule ${o.length ? "has-save-bar" : ""}">
+      <section class="schedule ${a.length ? "has-save-bar" : ""}">
         <div class="week">
           ${p.map(
-      (l, d) => h`<button
+      (l, c) => h`<button
               class="day-row"
-              aria-pressed=${String(d === e)}
-              aria-label=${`${A[d]}${o.includes(l) ? ", not saved" : ""}`}
-              @click=${() => this.scheduleDay = d}
+              aria-pressed=${String(c === e)}
+              aria-label=${`${S[c]}${a.includes(l) ? ", not saved" : ""}`}
+              @click=${() => this.scheduleDay = c}
             >
-              <span class="day-name">${J[d]}${o.includes(l) ? h`<span class="dot" title="Not saved"></span>` : c}</span>
-              ${this.renderBar(d, t)}
+              <span class="day-name">${ot[c]}${a.includes(l) ? h`<span class="dot" title="Not saved"></span>` : d}</span>
+              ${this.renderBar(c, t)}
             </button>`
     )}
           <div class="day-row ticks-row"><span></span>${this.renderTicks()}</div>
         </div>
 
-        <h2>${A[e]}</h2>
+        <h2>${S[e]}</h2>
         ${s.length ? h`<ol class="points">
               ${s.map(
-      (l, d) => h`<li>
-                  <button class="point" ?disabled=${!n} @click=${() => this.openPoint(e, d)}>
+      (l, c) => h`<li>
+                  <button class="point" ?disabled=${!n} @click=${() => this.openPoint(e, c)}>
                     <span class="time">${N(l.time)}</span>
                     <span
-                      class="swatch ${E(l.setpoint) ? "off" : "on"}"
-                      style=${E(l.setpoint) ? "" : `background: ${$t(l.setpoint)}`}
+                      class="swatch ${A(l.setpoint) ? "off" : "on"}"
+                      style=${A(l.setpoint) ? "" : `background: ${kt(l.setpoint)}`}
                     ></span>
-                    <span>${E(l.setpoint) ? "Off" : w(l.setpoint)}</span>
-                    ${n ? Xt : c}
+                    <span>${A(l.setpoint) ? "Off" : w(l.setpoint)}</span>
+                    ${n ? te : d}
                   </button>
                 </li>`
     )}
@@ -2118,43 +2151,43 @@ recorder:
               ${i === "loading" ? "Reading the schedule from the receiver…" : "No schedule for this day has come back yet."}
             </p>`}
         ${s.length ? h`<div class="point-actions">
-              <button class="secondary" ?disabled=${!n || s.length >= tt} @click=${() => this.openPoint(e, null)}>
+              <button class="secondary" ?disabled=${!n || s.length >= Q} @click=${() => this.openPoint(e, null)}>
                 Add a change
               </button>
               <button class="secondary" ?disabled=${!n} @click=${() => this.copyDays = []}>Copy to other days</button>
             </div>
-            ${s.length >= tt ? h`<p class="empty">The receiver allows ${tt} changes a day.</p>` : c}` : c}
-        ${i === "partial" || i !== "loading" && this.link && this.link.scheduleDays < 7 ? h`<button class="retry" @click=${() => this.link?.requestSchedule()}>Read again</button>` : c}
-        ${n && !o.length && this.untidyDays.length ? h`<div class="card tidy">
+            ${s.length >= Q ? h`<p class="empty">The receiver allows ${Q} changes a day.</p>` : d}` : d}
+        ${i === "partial" || i !== "loading" && this.link && this.link.scheduleDays < 7 ? h`<button class="retry" @click=${() => this.link?.requestSchedule()}>Read again</button>` : d}
+        ${n && !a.length && this.untidyDays.length ? h`<div class="card tidy">
               <p>
                 ${this.untidyDays.length === 7 ? "Every day" : `${this.untidyDays.length} days`} still
                 ${this.untidyDays.length === 1 || this.untidyDays.length === 7 ? "has" : "have"} the receiver's own filler times, so a temporary change
                 can end early (for example at 12:00). Tidying them keeps your heating times exactly the same.
               </p>
               <button class="secondary" @click=${this.tidySchedule}>Tidy the schedule</button>
-            </div>` : c}
+            </div>` : d}
         ${r && n ? h`<button class="link" @click=${this.restoreBackup}>
               Put back the schedule from before the first change (${new Date(r.saved).toLocaleDateString()})
-            </button>` : c}
+            </button>` : d}
       </section>
 
-      ${o.length ? h`<div class="save-bar">
+      ${a.length ? h`<div class="save-bar">
             <button class="secondary" ?disabled=${this.link?.busy} @click=${() => this.draft = null}>Discard</button>
             <button class="primary" ?disabled=${!this.link || this.link.busy || this.link.status !== "live"} @click=${this.saveSchedule}>
-              ${this.link?.busy ? "Saving…" : `Save ${o.length === 1 ? A[p.indexOf(o[0])] : `${o.length} days`}`}
+              ${this.link?.busy ? "Saving…" : `Save ${a.length === 1 ? S[p.indexOf(a[0])] : `${a.length} days`}`}
             </button>
-          </div>` : c}
+          </div>` : d}
       ${this.renderPointSheet()} ${this.renderCopySheet()}
     `;
   }
   renderPointSheet() {
     const t = this.editing;
-    if (!t) return c;
-    const e = (n) => this.editing = { ...t, ...n }, s = (n) => e({ time: Math.min(23 * 60 + 45, Math.max(0, t.time + n)) }), i = S(this.shownWeek[p[t.day]] ?? []);
+    if (!t) return d;
+    const e = (n) => this.editing = { ...t, ...n }, s = (n) => e({ time: Math.min(23 * 60 + 45, Math.max(0, t.time + n)) }), i = T(this.shownWeek[p[t.day]] ?? []);
     return h`<div class="sheet-backdrop" @click=${(n) => n.target === n.currentTarget && (this.editing = null)}>
       <div class="sheet" role="dialog" aria-modal="true" aria-label="Change">
         <div class="sheet-head">
-          <span>${t.index === null ? `New change on ${A[t.day]}` : `${A[t.day]}, ${N(i[t.index]?.time ?? t.time)}`}</span>
+          <span>${t.index === null ? `New change on ${S[t.day]}` : `${S[t.day]}, ${N(i[t.index]?.time ?? t.time)}`}</span>
           <button class="close" @click=${() => this.editing = null}>Close</button>
         </div>
         <p class="sheet-label">Starts at</p>
@@ -2175,8 +2208,8 @@ recorder:
             class="round"
             title="Lower"
             aria-label="Lower the temperature"
-            ?disabled=${t.off || t.setpoint <= Jt}
-            @click=${() => e({ setpoint: Math.max(Jt, t.setpoint - 0.5) })}
+            ?disabled=${t.off || t.setpoint <= Qt}
+            @click=${() => e({ setpoint: Math.max(Qt, t.setpoint - 0.5) })}
           >
             ${L}
           </button>
@@ -2185,8 +2218,8 @@ recorder:
             class="round"
             title="Raise"
             aria-label="Raise the temperature"
-            ?disabled=${t.off || t.setpoint >= Kt}
-            @click=${() => e({ setpoint: Math.min(Kt, t.setpoint + 0.5) })}
+            ?disabled=${t.off || t.setpoint >= Zt}
+            @click=${() => e({ setpoint: Math.min(Zt, t.setpoint + 0.5) })}
           >
             ${I}
           </button>
@@ -2194,24 +2227,24 @@ recorder:
         <button class="primary" @click=${this.applyPoint}>Done</button>
         ${t.index !== null ? h`<button class="link danger" ?disabled=${i.length <= 1} @click=${this.removePoint}>
               ${i.length <= 1 ? "A day needs at least one change" : "Remove this change"}
-            </button>` : c}
+            </button>` : d}
       </div>
     </div>`;
   }
   renderCopySheet() {
     const t = this.copyDays;
-    if (!t) return c;
-    const e = this.scheduleDay, s = (n) => this.copyDays = t.includes(n) ? t.filter((o) => o !== n) : [...t, n], i = p.map((n, o) => o).filter((n) => n !== e);
+    if (!t) return d;
+    const e = this.scheduleDay, s = (n) => this.copyDays = t.includes(n) ? t.filter((a) => a !== n) : [...t, n], i = p.map((n, a) => a).filter((n) => n !== e);
     return h`<div class="sheet-backdrop" @click=${(n) => n.target === n.currentTarget && (this.copyDays = null)}>
       <div class="sheet" role="dialog" aria-modal="true" aria-label="Copy to other days">
         <div class="sheet-head">
-          <span>Copy ${A[e]} to…</span>
+          <span>Copy ${S[e]} to…</span>
           <button class="close" @click=${() => this.copyDays = null}>Close</button>
         </div>
         <div class="chips">
           ${i.map(
       (n) => h`<button class="chip" aria-pressed=${String(t.includes(n))} @click=${() => s(n)}>
-              ${J[n]}
+              ${ot[n]}
             </button>`
     )}
           <button
@@ -2223,7 +2256,7 @@ recorder:
           <button class="chip" @click=${() => this.copyDays = i}>All</button>
         </div>
         <button class="primary" ?disabled=${!t.length} @click=${this.applyCopy}>
-          ${t.length ? `Copy to ${t.length === 1 ? A[t[0]] : `${t.length} days`}` : "Pick the days"}
+          ${t.length ? `Copy to ${t.length === 1 ? S[t[0]] : `${t.length} days`}` : "Pick the days"}
         </button>
       </div>
     </div>`;
@@ -2238,19 +2271,19 @@ recorder:
     return Number.isFinite(e) ? e : null;
   }
   valve(t, e) {
-    return Je({
+    return ss({
       sensor: this.sensorNumber(t.position),
       hasSensor: !!t.position,
       boilerHeating: this.receiver.heating,
       state: e.state,
       action: typeof e.attributes.hvac_action == "string" ? e.attributes.hvac_action : void 0,
-      current: k(e.attributes.current_temperature),
-      target: k(e.attributes.temperature)
+      current: x(e.attributes.current_temperature),
+      target: x(e.attributes.temperature)
     });
   }
   renderRadiators(t) {
     const e = this.radiators;
-    if (!e.length) return c;
+    if (!e.length) return d;
     const s = this.panel.config.radiators_when === "always" || t;
     return h`<section class="radiators">
       <h2>Radiators</h2>
@@ -2264,18 +2297,18 @@ recorder:
         <span class="row-name">${s}</span>
         <span class="row-sub">Not found: ${t.entity}. Check the entity id.</span>
       </div>`;
-    const i = k(e.attributes.current_temperature), n = k(e.attributes.temperature), o = this.valve(t, e), r = this.sensorNumber(t.battery);
+    const i = x(e.attributes.current_temperature), n = x(e.attributes.temperature), a = this.valve(t, e), r = this.sensorNumber(t.battery);
     return h`<button class="row" @click=${() => this.go({ radiator: t.entity.split(".")[1] })}>
       <span class="row-name">
         ${s}
-        ${r !== null && r < 20 ? h`<span class="battery" title=${`Battery low (${r}%)`} aria-label=${`Battery low, ${r}%`}>${is}</span>` : c}
+        ${r !== null && r < 20 ? h`<span class="battery" title=${`Battery low (${r}%)`} aria-label=${`Battery low, ${r}%`}>${ds}</span>` : d}
       </span>
       <span class="row-temps">
         <span class="row-cur">${i === null ? "–" : w(i)}</span>
         <span class="row-sub">${n === null ? "" : `set ${w(n)}`}</span>
       </span>
-      <span class="valve ${o.noHeat ? "no-heat" : ""}" title=${Ft(o)}>
-        <span style=${`width: ${o.pct ?? 0}%`}></span>
+      <span class="valve ${a.noHeat ? "no-heat" : ""}" title=${Yt(a)}>
+        <span style=${`width: ${a.pct ?? 0}%`}></span>
       </span>
     </button>`;
   }
@@ -2287,7 +2320,7 @@ recorder:
     const e = t.setpoint !== null && t.setpoint > t.target, s = `TPI is running the boiler for ${t.demand}% of each cycle to keep the room at ${w(t.target)}. It sets the receiver above the target to run the boiler and below it to rest it, so the Hive remote shows that setting rather than the target.`;
     return h`<p class="tpi-line" title=${s}>
       <span class="tpi-badge">TPI</span>
-      ${e ? "Heating" : "Resting"} · ${t.demand}%${t.setpoint !== null ? h` · <span class="tpi-remote">remote shows ${w(t.setpoint)}</span>` : c}
+      ${e ? "Heating" : "Resting"} · ${t.demand}%${t.setpoint !== null ? h` · <span class="tpi-remote">remote shows ${w(t.setpoint)}</span>` : d}
     </p>`;
   }
   renderRadiator(t) {
@@ -2297,15 +2330,15 @@ recorder:
     return h`
       <section class="hero">
         <heating-dial
-          .min=${k(e.attributes.min_temp) ?? 5}
-          .max=${k(e.attributes.max_temp) ?? 30}
-          .target=${k(e.attributes.temperature)}
-          .current=${k(e.attributes.current_temperature)}
+          .min=${x(e.attributes.min_temp) ?? 5}
+          .max=${x(e.attributes.max_temp) ?? 30}
+          .target=${x(e.attributes.temperature)}
+          .current=${x(e.attributes.current_temperature)}
           .off=${e.state === "off"}
           .active=${e.attributes.hvac_action === "heating"}
-          .label=${Ze(n)}
-          @dial-change=${(o) => {
-      const r = o.detail.value;
+          .label=${rs(n)}
+          @dial-change=${(a) => {
+      const r = a.detail.value;
       this.command(
         () => this.hass.callService("climate", "set_temperature", { temperature: r }, { entity_id: t.entity }).then(() => {
         }),
@@ -2315,13 +2348,13 @@ recorder:
         ></heating-dial>
       </section>
       <dl class="facts">
-        <div><dt>Valve</dt><dd class=${s.noHeat ? "no-heat" : ""} title=${Ft(s)}>${Ke(s)}</dd></div>
+        <div><dt>Valve</dt><dd class=${s.noHeat ? "no-heat" : ""} title=${Yt(s)}>${is(s)}</dd></div>
         <div><dt>Battery</dt><dd class=${i !== null && i < 20 ? "low" : ""}>${i === null ? "–" : `${i}%`}</dd></div>
       </dl>
     `;
   }
 };
-Et.styles = te`
+Ot.styles = ne`
     :host {
       --dusk: #1b2431;
       --slate: #273345;
@@ -2553,29 +2586,6 @@ Et.styles = te`
       width: 20px;
       height: 20px;
       vertical-align: -4px;
-    }
-    .date-pick {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 10px;
-      color: var(--haze);
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-    .date-pick input {
-      height: 44px;
-      padding: 0 12px;
-      border: 0;
-      border-radius: 12px;
-      background: var(--slate-2);
-      color: var(--mist);
-      font: inherit;
-      color-scheme: dark;
-    }
-    :host([theme="ha"]) .date-pick input {
-      color-scheme: light dark;
     }
     .card {
       display: block;
@@ -3056,71 +3066,71 @@ Et.styles = te`
       }
     }
   `;
-let g = Et;
-y([
-  $({ attribute: !1 })
-], g.prototype, "hass");
-y([
-  $({ attribute: !1 })
-], g.prototype, "panel");
-y([
-  $({ type: Boolean })
-], g.prototype, "narrow");
-y([
-  b()
-], g.prototype, "view");
-y([
-  b()
-], g.prototype, "kiosk");
-y([
-  b()
-], g.prototype, "scheduleDay");
-y([
-  b()
-], g.prototype, "tick");
-y([
-  b()
-], g.prototype, "boostOpen");
-y([
-  b()
-], g.prototype, "boostMinutes");
-y([
-  b()
-], g.prototype, "boostTemp");
-y([
-  b()
-], g.prototype, "awayOpen");
-y([
-  b()
-], g.prototype, "awayDay");
-y([
-  b()
-], g.prototype, "awayTime");
-y([
-  b()
-], g.prototype, "awayTemp");
-y([
-  b()
-], g.prototype, "toast");
-y([
-  b()
-], g.prototype, "toastError");
-y([
-  b()
-], g.prototype, "chosen");
-y([
-  b()
-], g.prototype, "draft");
-y([
-  b()
-], g.prototype, "editing");
-y([
-  b()
-], g.prototype, "copyDays");
-y([
-  b()
-], g.prototype, "frozen");
-customElements.get("heating-panel") || customElements.define("heating-panel", g);
+let f = Ot;
+g([
+  k({ attribute: !1 })
+], f.prototype, "hass");
+g([
+  k({ attribute: !1 })
+], f.prototype, "panel");
+g([
+  k({ type: Boolean })
+], f.prototype, "narrow");
+g([
+  y()
+], f.prototype, "view");
+g([
+  y()
+], f.prototype, "kiosk");
+g([
+  y()
+], f.prototype, "scheduleDay");
+g([
+  y()
+], f.prototype, "tick");
+g([
+  y()
+], f.prototype, "boostOpen");
+g([
+  y()
+], f.prototype, "boostMinutes");
+g([
+  y()
+], f.prototype, "boostTemp");
+g([
+  y()
+], f.prototype, "awayOpen");
+g([
+  y()
+], f.prototype, "awayDay");
+g([
+  y()
+], f.prototype, "awayTime");
+g([
+  y()
+], f.prototype, "awayTemp");
+g([
+  y()
+], f.prototype, "toast");
+g([
+  y()
+], f.prototype, "toastError");
+g([
+  y()
+], f.prototype, "chosen");
+g([
+  y()
+], f.prototype, "draft");
+g([
+  y()
+], f.prototype, "editing");
+g([
+  y()
+], f.prototype, "copyDays");
+g([
+  y()
+], f.prototype, "frozen");
+customElements.get("heating-panel") || customElements.define("heating-panel", f);
 export {
-  g as HeatingPanel
+  f as HeatingPanel
 };

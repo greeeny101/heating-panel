@@ -16,6 +16,43 @@ After a `/set`, zigbee2mqtt reports the value it *wrote* until the device report
 `temperature_setpoint_hold_duration: 15` for 10 minutes while the receiver actually held ~65535.
 To know what the receiver really has, send a `/get` for the attribute and use the reply.
 
+## zigbee2mqtt 2.8 and later: hold lengths over 24 hours
+
+Found from GitHub issue #1 (9 Nov 2026, an SLR2b): `Publish 'set' 'temperature_setpoint_hold_duration' failed:
+'Error: Status 'INVALID_VALUE' tempSetpointHoldDuration requires max of 1440'`.
+
+zigbee-herdsman 8 (December 2025; zigbee2mqtt 2.8.0 onwards) checks every attribute against the Zigbee spec's
+range, and the spec gives `tempSetpointHoldDuration` 0–1440 minutes. The Hive receivers use more (65535 = no end,
+counts up to 65534), so on any Hive model:
+
+- **A named write over 1440 is refused** before it's sent, and zigbee2mqtt carries on with the message's other
+  keys. Manual (65535) therefore switched the hold on but logged the error. Away for more than a day failed.
+- **A report of 65535 comes back as `null`** (the Zigbee "no value"; this part started in 2.6.1, see
+  zigbee2mqtt#28465). `null` with the hold on is Manual.
+- **A report over 1440 (other than 65535) is dropped silently**, so zigbee2mqtt's messages keep the last count it
+  had, often 0. A long Away would show the wrong end, and couldn't be checked.
+- **zigbee2mqtt's generic write isn't checked**: `{"write": {"cluster": "hvacThermostat", "payload": {"36":
+  {"value": 65535, "type": 33}}}}` (attribute 0x0024, uint16). zigbee2mqtt takes a /set's keys in order, so it can
+  go before the hold like a named key. The panel uses it for Manual's "no end" (`src/z2m.ts`).
+
+So Away is capped at 24 hours. Longer would need Home Assistant to top the hold up: [long-away.md](long-away.md).
+
+## Dual-channel receivers (SLR2, SLR2b, SLR2c)
+
+From zigbee2mqtt's `hive.ts` and an SLR2's report (greeeny101/Hive-Thermostat-Zigbee2MQTT#3); not tried on a real
+one yet. They have a heating endpoint (5, `heat`) and a hot water endpoint (6, `water`), and zigbee2mqtt names every
+property after one: `system_mode_heat`, `temperature_setpoint_hold_duration_water`, `weekly_schedule_heat`.
+
+- A /set or /get key ending `_heat` goes to the heating endpoint (`write_heat` too). A key without one goes to
+  the device's first endpoint.
+- The plain names in its messages (`system_mode`, `occupied_heating_setpoint`) are left over from writes without
+  an endpoint and say nothing about either channel: in that report, `system_mode` was "heat" while
+  `system_mode_heat` was "off".
+- The panel and the integration spot `_heat` keys, read only those, and add `_heat` to everything they send. The
+  first reads go before they know, so the schedule is asked for again once they do. Hot water is ignored.
+- zigbee2mqtt doesn't list `emergency_heating` (Boost) for the heating endpoint, but its converter accepts it.
+  Whether the SLR2b boosts the heating that way is still to confirm.
+
 ## Boost (system_mode `emergency_heating`)
 
 - `temperature_setpoint_hold_duration` is minutes remaining. The receiver counts it down once a minute.
@@ -131,7 +168,15 @@ Schedule on the receiver at first read (same every day):
   Confirmed by two `/get` reads.
 - [x] Manual (11:26, at 15° so the boiler stayed off): `/set {"system_mode":"heat","temperature_setpoint_hold":true,"temperature_setpoint_hold_duration":65535}`
   → hold on, no end, setpoint reset to the schedule's value (1). Then `/set {"occupied_heating_setpoint":15}`
-  → kept (still 15 ten seconds later).
+  → kept (still 15 ten seconds later). That was zigbee2mqtt 2.6.0; from 2.8.0 the 65535 is refused (see above).
+- [x] Manual from 0.5.0 (9 Nov 2026, 13:45, SLR1c, zigbee2mqtt 2.14.2, live TPI switched off): from Schedule (going
+  there first if a hold is on, as Boost does), `/set {"system_mode":"heat","write":{…65535…},"temperature_setpoint_hold":true}`,
+  i.e. "no end" written before the hold switches on, the way a boost's length latches. Hold true within 1.5 s, length
+  read back as `null` (no end), then `/set {"occupied_heating_setpoint":14.5}` kept. Still Manual with no end 60 s
+  later; no zigbee2mqtt errors; boiler idle throughout. Back to Schedule confirmed (hold false, 0, the slot's 16°).
+  - With TPI running and not told to wait (the test went through another Home Assistant), the step back to Schedule
+    never held: TPI wrote its nudge within 40 ms of the receiver reporting Schedule, which switches a hold back on.
+    The panel tells the integration it's busy, so TPI waits for it.
 - [x] Off (11:26 from Schedule; **fixed 17:10**): `{"system_mode":"off"}` alone only worked from Schedule. From
   Manual (17:09) it left `temperature_setpoint_hold: true`, 65535, and the old setpoint (20, 18.5), so the receiver
   kept heating to it. `{hold: false, system_mode: off}` (17:12) gave off + hold false but **kept 18.5**. The remote's

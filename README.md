@@ -1,6 +1,6 @@
 # Heating panel for Home Assistant
 
-[![Open your Home Assistant and add this repository to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=greeeny101&repository=heating-panel&category=integration)
+[![Open Heating panel in HACS on your Home Assistant](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=greeeny101&repository=heating-panel&category=integration)
 
 A full-screen heating control for Home Assistant, built for phones and the Companion app. One round dial, a
 few big buttons, and a schedule editor. Simple enough for anyone in the house.
@@ -8,7 +8,8 @@ few big buttons, and a schedule editor. Simple enough for anyone in the house.
 It talks to a zigbee2mqtt heating receiver over MQTT, and to radiator valves through Home Assistant.
 
 **Tested with:** Hive SLR1c receiver (heating only) with an SLT3C remote, zigbee2mqtt 2.x, and Moes BRT-100
-and SONOFF TRV-ZBT radiator valves.
+and SONOFF TRV-ZBT radiator valves. The dual-channel SLR2, SLR2b and SLR2c should work for their heating (not their
+hot water), but haven't been tried on a real one yet: please open an issue saying how it went.
 
 <p>
   <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/dial.jpg" width="200" alt="The dial: Schedule at 19.5°, room 19.4°, heating now, with the mode buttons and today's schedule below">
@@ -29,8 +30,8 @@ and SONOFF TRV-ZBT radiator valves.
 - **Modes:** Schedule, Manual, Off and Boost.
 - **Boost** for 15 minutes to 2 hours at a chosen temperature. It always ends by itself (see "Boost that
   never ends" under Troubleshooting).
-- **Going away?** keeps the house at a low temperature until the day and time you're back, then goes back to
-  the schedule by itself.
+- **Going away?** keeps the house at a low temperature until the time you're back (up to 24 hours ahead), then
+  goes back to the schedule by itself.
 - **Schedule editor:**
   - Up to 6 changes a day; copy a day to other days.
   - Edits are saved to the receiver, so the schedule keeps running even if Home Assistant is down.
@@ -55,14 +56,13 @@ and SONOFF TRV-ZBT radiator valves.
 
 ### With HACS
 
-Heating panel isn't in HACS's default list yet (it's waiting for review), so add it as a custom repository first.
+1. In HACS, search for **Heating panel** and open it. Or click the blue button at the top of this page: it
+   opens your Home Assistant at Heating panel in HACS.
+2. Download it.
+3. Restart Home Assistant.
 
-Click the blue button at the top of this page: it opens your Home Assistant at this repository in HACS. Or,
-in HACS, open the ⋮ menu → **Custom repositories** and add `https://github.com/greeeny101/heating-panel` as an
-**Integration**. Then:
-
-1. Download **Heating panel** in HACS.
-2. Restart Home Assistant.
+If HACS doesn't find it, add it as a custom repository: open the ⋮ menu → **Custom repositories** and add
+`https://github.com/greeeny101/heating-panel` as an **Integration**, then carry on from step 1.
 
 ### By hand
 
@@ -233,7 +233,8 @@ Everything except `receiver.topic` is optional:
   itself:
   - The remote shows it as a boost with a long countdown.
   - The panel tells Away from Boost by its temperature (16° or below) or its length (more than 6 hours).
-  - It can last up to about 45 days.
+  - It can last up to 24 hours: zigbee2mqtt 2.8 and later won't pass a longer hold. For longer, set a holiday
+    on the remote (below).
   - Pressing Boost during Away ends the Away.
 - **Away keeps one temperature all day and night.** The heating comes on whenever the house drops below it,
   including overnight. Choose a lower away temperature (10–12°) to keep that rare. A "holiday schedule" (your
@@ -255,7 +256,8 @@ Everything except `receiver.topic` is optional:
 - **Boost lengths in the boost sheet go up to 2 hours.** The remote's display goes up to 6 hours.
 - **Schedule backup is per device.** The "put back the schedule" backup is kept in the browser that made
   the first change.
-- **Heating only.** It's heating only for now: the SLR2's hot water isn't supported yet. If that's something you'd use, let me know.
+- **Heating only.** On a dual-channel receiver (SLR2, SLR2b, SLR2c) the panel controls the heating; the hot water
+  isn't supported yet. If that's something you'd use, let me know.
 
 ## Troubleshooting
 
@@ -269,6 +271,9 @@ it reconnects. The panel warns about this if it sees one. Delete it, and never p
 
 - Plug the stick into a USB 2 port, on a 1–2 m extension cable, away from the computer, router and SSDs.
 - Check that your 2.4 GHz Wi-Fi channel doesn't overlap the Zigbee channel.
+
+**zigbee2mqtt logs "tempSetpointHoldDuration requires max of 1440".** The panel before 0.5.0 sent Manual's "no
+end" in a way zigbee2mqtt 2.8 and later refuse. Update the integration (and reload the panel).
 
 **"No reply from the receiver".** The `topic` must match the receiver's name in zigbee2mqtt exactly, and
 zigbee2mqtt must be running.

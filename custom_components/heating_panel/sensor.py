@@ -28,6 +28,7 @@ from .controller import TpiController
 from .mode import MODES, Settler, decode_mode
 from .panel import receiver_sensor_unique_id
 from .publish import async_first_read
+from .z2m import from_z2m
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -44,7 +45,8 @@ class ReceiverSensor(SensorEntity):
     """The receiver's every report, as attributes: the panel follows the receiver through it.
 
     People who aren't administrators can't watch MQTT topics, but they can watch entities. Its state is the
-    receiver's system_mode. Every report is passed on, even one the same as the last (the panel's checks rely on
+    receiver's system_mode (the heating's, on a dual-channel receiver). Every report is passed on as it came, for
+    the panel to read the way it reads the topic, even one the same as the last (the panel's checks rely on
     seeing each one), and its attributes aren't kept in the history.
     """
 
@@ -85,7 +87,7 @@ class ReceiverSensor(SensorEntity):
 
     @property
     def native_value(self) -> str | None:
-        mode = self._report.get("system_mode")
+        mode = from_z2m(self._report).get("system_mode")
         return str(mode) if mode is not None else None
 
     @property
@@ -140,7 +142,7 @@ class HeatingModeSensor(SensorEntity):
         except ValueError:
             return
         if isinstance(payload, dict) and self._settler:
-            self._settler.report(payload)
+            self._settler.report(from_z2m(payload))
 
     @callback
     def _busy(self, busy: bool) -> None:
