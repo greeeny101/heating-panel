@@ -14,7 +14,7 @@ hot water), but haven't been tried on a real one yet: please open an issue sayin
 <p>
   <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/dial.jpg" width="200" alt="The dial: Schedule at 19.5°, room 19.4°, heating now, with the mode buttons and today's schedule below">
   <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/boost.jpg" width="200" alt="Boost: choose 15 minutes to 2 hours, and a temperature">
-  <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/away.jpg" width="200" alt="Going away: the day and time you're back, and the temperature while away">
+  <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/away.jpg" width="200" alt="Going away: back today or tomorrow at a chosen time (up to 24 hours ahead), and the temperature while away">
 </p>
 <p>
   <img src="https://raw.githubusercontent.com/greeeny101/heating-panel/main/docs/screenshots/schedule.jpg" width="200" alt="The week's schedule, one bar per day">
