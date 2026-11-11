@@ -54,13 +54,14 @@ jobs:
         with:
           python-version: "3.14"
       - run: pip install -r requirements_test.txt
-      # Between betas this installs the newest release again.
+      # pytest-homeassistant is released with each Home Assistant beta too, pinned to it, so this brings the newest
+      # beta (between betas, the newest release again). Upgrading homeassistant on its own would leave the test
+      # package behind: that broke this job from 29 Oct 2026 (2026.11.0b0).
       - name: Home Assistant beta
         if: matrix.channel == 'beta'
-        run: pip install --pre --upgrade homeassistant
-      - name: Home Assistant's frontend (the version it asks for)
-        run: |
-          pip install $(python -c "import json, pathlib, homeassistant.components.frontend as f; print(' '.join(json.loads((pathlib.Path(f.__file__).parent / 'manifest.json').read_text())['requirements']))")
+        run: pip install --pre --upgrade pytest-homeassistant
+      - name: The libraries of the Home Assistant integrations the tests use (the versions it asks for)
+        run: pip install $(python tests/ha_requirements.py)
       - name: Versions
-        run: pip list 2>/dev/null | grep -iE "^(homeassistant|home-assistant-frontend|pytest-homeassistant-custom-component) "
+        run: pip list 2>/dev/null | grep -iE "^(homeassistant|home-assistant-frontend|pytest-homeassistant) "
       - run: python -m pytest tests -q

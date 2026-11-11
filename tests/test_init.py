@@ -4,13 +4,13 @@ from datetime import timedelta
 import json
 
 import pytest
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockUser,
     async_fire_mqtt_message,
     async_fire_time_changed,
 )
-from pytest_homeassistant_custom_component.typing import ClientSessionGenerator, MqttMockHAClient
+from pytest_homeassistant.typing import ClientSessionGenerator, MqttMockHAClient
 
 from custom_components.heating_panel.const import DOMAIN, panel_setpoint_signal
 from homeassistant.components import frontend, mqtt, panel_custom

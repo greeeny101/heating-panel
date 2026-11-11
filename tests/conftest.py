@@ -1,4 +1,4 @@
-"""Fixtures for the tests that run the integration inside Home Assistant (pytest-homeassistant-custom-component).
+"""Fixtures for the tests that run the integration inside Home Assistant (pytest-homeassistant).
 
 These catch a Home Assistant release breaking the integration: CI runs them against the newest release and the
 newest beta. The receiver is never real: MQTT is mocked, and reports are made up with async_fire_mqtt_message.
@@ -8,8 +8,8 @@ from collections.abc import AsyncGenerator, Generator
 from unittest.mock import Mock, patch
 
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
-from pytest_homeassistant_custom_component.typing import MqttMockHAClient, MqttMockPahoClient
+from pytest_homeassistant.common import MockConfigEntry
+from pytest_homeassistant.typing import MqttMockHAClient, MqttMockPahoClient
 
 from custom_components.heating_panel.const import DOMAIN
 from homeassistant.config_entries import ConfigEntryState
@@ -29,11 +29,6 @@ REPORT = {
     "temperature_setpoint_hold": False,
     "temperature_setpoint_hold_duration": 0,
 }
-
-
-@pytest.fixture(autouse=True)
-def auto_enable_custom_integrations(enable_custom_integrations: None) -> None:
-    """Let Home Assistant load the integration from custom_components/."""
 
 
 @pytest.fixture(autouse=True)

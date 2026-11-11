@@ -54,7 +54,18 @@ hot water), but haven't been tried on a real one yet: please open an issue sayin
 
 ## Install
 
-### With HACS
+### From the Marketplace (Home Assistant 2026.11 and later)
+
+Since 2026.11, Home Assistant has HACS built in as the **Marketplace**. If you used HACS before, Home Assistant
+moved it over when it updated, along with anything you'd installed.
+
+1. Go to **Settings → Marketplace** and search for **Heating panel**.
+2. Select **Install**. It goes straight on to setting it up (see [Set up](#set-up)).
+
+If the Marketplace doesn't find it, select **Add from link**, enter `https://github.com/greeeny101/heating-panel`,
+then carry on from step 1.
+
+### With HACS (Home Assistant 2026.10)
 
 1. In HACS, search for **Heating panel** and open it. Or click the blue button at the top of this page: it
    opens your Home Assistant at Heating panel in HACS.
@@ -74,7 +85,7 @@ folder, then restart Home Assistant.
 Skip this if you're new to the heating panel. It's for anyone who already has it in `configuration.yaml`, from
 before version 0.4: a `panel_custom` entry and a `heating panel receiver` MQTT sensor.
 
-Install it as above first. HACS replaces a hand-copied `custom_components/heating_panel` folder, and your YAML
+Install it as above first. The Marketplace (or HACS) replaces a hand-copied `custom_components/heating_panel` folder, and your YAML
 setup keeps working meanwhile: the integration doesn't add its own panel until you ask it to. Then:
 
 1. Remove the heating panel's `panel_custom` entry, the `heating panel receiver` MQTT sensor, and its
@@ -145,7 +156,7 @@ tap_action:
 ```
 
 For a fuller card, with the mode, the radiators and warnings, see [dashboard-card.yaml](dashboard-card.yaml). It
-needs Mushroom, Vertical Stack In Card, Bubble Card and card-mod from HACS.
+needs Mushroom, Vertical Stack In Card, Bubble Card and card-mod from the Marketplace (or HACS).
 
 Links can open a particular view:
 
@@ -317,7 +328,8 @@ npm run integration:dev   # build, and copy the integration into the dev Home As
 npm run dev          # rebuild on save into the dev Home Assistant's www folder, for a YAML panel there
 ```
 
-The built panel is committed, because HACS installs the integration straight from the repository. The tests
+The built panel is committed, because the Marketplace (and HACS) install the integration straight from the
+repository. The tests
 workflow fails if it doesn't match the source, so run `npm run build` before committing.
 
 The tests run the panel's receiver code against a fake receiver (`test/fake-receiver.ts`) that behaves
@@ -326,7 +338,8 @@ lost commands. No Home Assistant, MQTT or boiler is involved. When the real rece
 add it to the fake and write a test for it.
 
 `tests/` runs the integration inside a test Home Assistant
-([pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component)),
+([pytest-homeassistant](https://github.com/home-assistant/core/tree/dev/packages/pytest-homeassistant), Home Assistant's
+own test package),
 with MQTT mocked: setting up a receiver, the Configure pages, the panel, the sensors, the services, and moving from
 the YAML setup. The tests workflow runs it against the newest Home Assistant release and the newest beta, on
 every push and every Thursday morning (the monthly beta is out by Wednesday evening), so a Home Assistant change
@@ -334,8 +347,7 @@ that breaks the integration shows up a week before the release. It needs Python 
 
 ```sh
 docker run --rm -v "$PWD:/repo" -w /repo -e PYTHONDONTWRITEBYTECODE=1 python:3.14 sh -c 'pip install -q -r requirements_test.txt &&
-  pip install -q $(python -c "import json, pathlib, homeassistant.components.frontend as f; print(\" \".join(json.loads((pathlib.Path(f.__file__).parent / \"manifest.json\").read_text())[\"requirements\"]))") &&
-  python -m pytest -p no:cacheprovider tests -q'
+  pip install -q $(python tests/ha_requirements.py) && python -m pytest -p no:cacheprovider tests -q'
 ```
 
 The dev Home Assistant (port 8124) is shared with the doorbell panel. Its config is in
@@ -345,5 +357,6 @@ The dev Home Assistant (port 8124) is shared with the doorbell panel. Its config
 
 1. Change `version` in `custom_components/heating_panel/manifest.json` (and `package.json`).
 2. `npm run build`, run the tests, and commit.
-3. Make a GitHub release (not just a tag) named after the version, e.g. `v0.4.0`. HACS offers each release as an
-   update.
+3. Make a GitHub release (not just a tag) named after the version, without a "v", e.g. `0.5.1`. The Marketplace
+   (and HACS) offer each release as an update. Tick **Set as a pre-release** for one only people who've asked for
+   beta versions should get.

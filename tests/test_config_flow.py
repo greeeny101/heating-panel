@@ -1,6 +1,6 @@
 """Adding a receiver, and its Configure pages (Panel, TPI)."""
 
-from pytest_homeassistant_custom_component.typing import MqttMockHAClient
+from pytest_homeassistant.typing import MqttMockHAClient
 
 from custom_components.heating_panel.const import DOMAIN
 from homeassistant import config_entries
